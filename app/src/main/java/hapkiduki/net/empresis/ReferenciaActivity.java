@@ -5,10 +5,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -28,7 +32,7 @@ import java.util.ArrayList;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.clases.Referencia;
 
-public class ReferenciaActivity extends AppCompatActivity {
+public class ReferenciaActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaRefe;
@@ -36,6 +40,7 @@ public class ReferenciaActivity extends AppCompatActivity {
 
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
+    ReferenciaAdapter miAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +85,8 @@ public class ReferenciaActivity extends AppCompatActivity {
                             //System.out.println(referencias.getNomref().toString());
                         }
                         pDialog.hide();
-                        ReferenciaAdapter miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
+                        //ReferenciaAdapter miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
+                        miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
                         recyclerReferencias.setAdapter(miAdapter);
 
                     } catch (JSONException e) {
@@ -114,4 +120,36 @@ public class ReferenciaActivity extends AppCompatActivity {
         }
     }
 
+    //Agregamos los metodos necesarios para nuestro Scope
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_items,menu);
+        MenuItem itemBuscar = menu.findItem(R.id.item_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemBuscar);
+        searchView.setOnQueryTextListener(this);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        newText = newText.toLowerCase();
+        ArrayList<Referencia> query = new ArrayList<>();
+        //Foreach
+        for (Referencia referencia : listaRefe){
+            String nomRefe = referencia.getNomref().toLowerCase();
+            String codRef = referencia.getCodRef().toLowerCase();
+
+            if (nomRefe.contains(newText) || codRef.contains(newText)){
+                query.add(referencia);
+            }
+        }
+        miAdapter.filter(query);
+        return true;
+    }
 }

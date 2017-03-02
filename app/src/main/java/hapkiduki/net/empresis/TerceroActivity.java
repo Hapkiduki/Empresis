@@ -5,12 +5,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -27,12 +29,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.adapters.TerceroAdapter;
-import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
-public class TerceroActivity extends AppCompatActivity {
+public class TerceroActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
     RecyclerView recyclerTerceros;
     ArrayList<Tercero> listaTerce;
@@ -40,6 +40,7 @@ public class TerceroActivity extends AppCompatActivity {
 
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
+    TerceroAdapter miAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class TerceroActivity extends AppCompatActivity {
 
         cargarWebServiceImagenes();
     }
+
 
     private void cargarWebServiceImagenes() {
         pDialog=new ProgressDialog(this);
@@ -85,7 +87,8 @@ public class TerceroActivity extends AppCompatActivity {
                             //System.out.println(referencias.getNomref().toString());
                         }
                         pDialog.hide();
-                        TerceroAdapter miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
+                       // TerceroAdapter miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
+                        miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
                         recyclerTerceros.setAdapter(miAdapter);
 
                     } catch (JSONException e) {
@@ -119,4 +122,36 @@ public class TerceroActivity extends AppCompatActivity {
         }
     }
 
+    //Agregamos el Menu o scope
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_items, menu);
+        MenuItem itemBuscar = menu.findItem(R.id.item_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemBuscar);
+        searchView.setOnQueryTextListener(this);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        newText = newText.toLowerCase();
+        ArrayList<Tercero> query = new ArrayList<>();
+        //Esto es un foreach en java
+        for (Tercero tercero: listaTerce){
+            String nomTercero = tercero.getTercero().toLowerCase();
+            String dni = tercero.getDni().toLowerCase();
+            if (nomTercero.contains(newText) || dni.contains(newText)){
+                query.add(tercero);
+            }
+        }
+
+
+        miAdapter.setFilter(query);
+        return true;
+    }
 }
