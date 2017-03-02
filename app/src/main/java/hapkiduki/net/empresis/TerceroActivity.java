@@ -72,6 +72,14 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                 @Override
                 public void onResponse(JSONObject response) {
                     Tercero terceros;
+                    /*
+                    * Traemos la lista local de terceros mediante la libreria SUGAR
+                    */
+                    listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
+                    /*
+                    * Eliminamos todos los terceros de la lista local con el metodo de Sugar
+                     */
+                    Tercero.deleteAll(Tercero.class);
                     try {
 
                         JSONArray json=response.optJSONArray("fp_terce");
@@ -85,6 +93,11 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                             terceros.setTelefono(jsonArrayChild.optString("TELEFONO"));
                             listaTerce.add(terceros);
                             //System.out.println(referencias.getNomref().toString());
+
+                            /*
+                             * Guardamos la lista de terceros en la tabla local con Sugar
+                             */
+                            terceros.save();
                         }
                         pDialog.hide();
                        // TerceroAdapter miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
@@ -109,16 +122,23 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                     Log.d("ERROR: ", error.toString());
                 }
             });
-            ///////////
+
             jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(500000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            ////////////////
+
             request.add(jsonObjectRequest);
         } else {
-            Toast.makeText(getApplication(), "No se puede conectar, Verifique que " +
+            Toast.makeText(getApplication(), "No se pudo sincronizar, Verifique que " +
                     "cuenta con acceso a Internet", Toast.LENGTH_LONG).show();
             pDialog.hide();
+            /*
+             * Traemos la lista de terceros de manera local con sugar y lo
+             * Bindamos al Reciclerview
+             */
+            listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
+            miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
+            recyclerTerceros.setAdapter(miAdapter);
         }
     }
 
