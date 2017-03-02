@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:elevation="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        card_view:cardCornerRadius="1dp"
+        card_view:cardElevation="4dp"
+        card_view:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/tvTerce"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:text="Nombre"
+                android:paddingTop="5dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:textStyle="italic|bold"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+
+            <TextView
+                android:id="@+id/tvDireccion"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Dirección"
+                android:paddingTop="5dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:paddingBottom="5dp"
+                android:layout_toRightOf="@+id/tvTelefono"
+                android:layout_below="@+id/tvTerce"/>
+
+            <TextView
+                android:id="@+id/tvDNI"
+                android:layout_width="180dp"
+                android:layout_toRightOf="@+id/tvTerce"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:paddingBottom="5dp"
+                android:textStyle="bold|italic"
+                android:text="DNI" />
+
+            <TextView
+                android:id="@+id/tvTelefono"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvTerce"
+                android:paddingTop="5dp"
+                android:paddingRight="5dp"
+                android:paddingLeft="5dp"
+                android:paddingBottom="5dp"
+                android:text="Teléfono"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
