@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">EmpreSis</string>
+    <string name="title_activity_referencia_adapter">ReferenciaAdapter</string>
+    <string name="title_activity_referencia">ReferenciaActivity</string>
+</resources>
