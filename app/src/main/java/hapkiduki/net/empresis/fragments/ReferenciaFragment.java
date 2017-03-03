@@ -1,18 +1,23 @@
-package hapkiduki.net.empresis;
+package hapkiduki.net.empresis.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -28,11 +33,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
+import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.clases.Referencia;
 
-public class ReferenciaActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+import static hapkiduki.net.empresis.R.id.container;
+
+
+public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTextListener{
+
+
+    private OnFragmentInteractionListener mListener;
+    View vista;
 
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaRefe;
@@ -42,29 +56,53 @@ public class ReferenciaActivity extends AppCompatActivity implements SearchView.
     JsonObjectRequest jsonObjectRequest;
     ReferenciaAdapter miAdapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_referencia);
-
-        listaRefe=new ArrayList<Referencia>();
-        recyclerReferencias = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerReferencias.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
-        recyclerReferencias.setHasFixedSize(true);
-
-        request = Volley.newRequestQueue(this);
-
-        cargarWebServiceImagenes();
+    public ReferenciaFragment() {
 
     }
 
+
+    public static ReferenciaFragment newInstance(String param1, String param2) {
+        ReferenciaFragment fragment = new ReferenciaFragment();
+        Bundle args = new Bundle();
+
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        vista = inflater.inflate(R.layout.fragment_referencia, container, false);
+        setHasOptionsMenu(true);
+
+        listaRefe=new ArrayList<Referencia>();
+        recyclerReferencias = (RecyclerView) vista.findViewById(R.id.recycler_view);
+        recyclerReferencias.setLayoutManager(new LinearLayoutManager(vista.getContext()));
+        recyclerReferencias.setHasFixedSize(true);
+
+        request = Volley.newRequestQueue(vista.getContext());
+
+        cargarWebServiceImagenes();
+        // Inflate the layout for this fragment
+        return vista;
+    }
+
     private void cargarWebServiceImagenes() {
-        pDialog=new ProgressDialog(this);
+
+        pDialog=new ProgressDialog(vista.getContext());
         pDialog.setMessage("Cargando Referencias...");
         pDialog.show();
 
         ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
+                vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             String url = "http://192.168.0.105/empresis/WsJSONConsultaReferencia.php";
@@ -72,6 +110,13 @@ public class ReferenciaActivity extends AppCompatActivity implements SearchView.
                 @Override
                 public void onResponse(JSONObject response) {
                     Referencia referencias;
+
+                    /*
+                    * Traemos la lista local de referencias mediante la librería Sugar
+                    * y los eliminamos
+                    * */
+                    listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+                    Referencia.deleteAll(Referencia.class);
                     try {
 
                         JSONArray json=response.optJSONArray("fp_refer");
@@ -83,10 +128,16 @@ public class ReferenciaActivity extends AppCompatActivity implements SearchView.
                             referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
                             listaRefe.add(referencias);
                             //System.out.println(referencias.getNomref().toString());
+                            /**
+                             * Guardamos la lista de referencias de manera local con sugar
+                             * */
+                            referencias.save();
                         }
-                        pDialog.hide();
+                        pDialog.dismiss();
                         //ReferenciaAdapter miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
-                        miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
+
+
+                        miAdapter=new ReferenciaAdapter(vista.getContext(),listaRefe);
                         recyclerReferencias.setAdapter(miAdapter);
 
                     } catch (JSONException e) {
@@ -94,41 +145,83 @@ public class ReferenciaActivity extends AppCompatActivity implements SearchView.
                         e.printStackTrace();
                         pDialog.hide();
                         System.out.println(response);
-                        Toast.makeText(getApplication(), "No se ha podido establecer conexión con el servidor" +
+                        Toast.makeText(vista.getContext(), "No se ha podido establecer conexión con el servidor" +
                                 " "+response, Toast.LENGTH_LONG).show();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getApplication(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
+
+                    pDialog.dismiss();
+                    if (error.toString().contains("com.android.volley.NoConnectionError")){
+                        Toast.makeText(vista.getContext(), "No se puede conectar, verifique que el servidor se encuentre disponible", Toast.LENGTH_LONG).show();
+                    }else{
+                        Toast.makeText(vista.getContext(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
+                    }
+
                     System.out.println();
-                    pDialog.hide();
                     Log.d("ERROR: ", error.toString());
                 }
             });
-            ///////////
+
             jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(500000,
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            ////////////////
+
             request.add(jsonObjectRequest);
         } else {
-            Toast.makeText(getApplication(), "No se puede conectar, Verifique que " +
+            Toast.makeText(vista.getContext(), "No se pudo sincronizar, Verifique que " +
                     "cuenta con acceso a Internet", Toast.LENGTH_LONG).show();
-            pDialog.hide();
+            pDialog.dismiss();
+
+            /**
+             * Cargamos los datos al recicler view de forma local
+             * con SUGAR
+             */
+
+            listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+            miAdapter=new ReferenciaAdapter(vista.getContext(),listaRefe);
+            recyclerReferencias.setAdapter(miAdapter);
+
         }
     }
 
     //Agregamos los metodos necesarios para nuestro Scope
 
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_items,menu);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_items,menu);
         MenuItem itemBuscar = menu.findItem(R.id.item_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemBuscar);
         searchView.setOnQueryTextListener(this);
-        return true;
+
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
@@ -151,5 +244,11 @@ public class ReferenciaActivity extends AppCompatActivity implements SearchView.
         }
         miAdapter.filter(query);
         return true;
+    }
+
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
     }
 }
