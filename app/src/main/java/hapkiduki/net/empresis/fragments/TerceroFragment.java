@@ -70,13 +70,14 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
         recyclerTerceros.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerTerceros.setHasFixedSize(true);
 
-        request = Volley.newRequestQueue(this.getContext());
+        //request = Volley.newRequestQueue(this.getContext());
 
         cargarWebService();
         return vista;
     }
 
     private void cargarWebService() {
+        request = Volley.newRequestQueue(this.getContext());
         pDialog=new ProgressDialog(getContext());
         pDialog.setMessage("Cargando Terceros...");
         pDialog.show();

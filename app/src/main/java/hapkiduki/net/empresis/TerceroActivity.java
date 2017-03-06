@@ -103,6 +103,8 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                        // TerceroAdapter miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
                         miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
                         recyclerTerceros.setAdapter(miAdapter);
+                        //////////////
+                        miAdapter.notifyDataSetChanged();
 
                     } catch (JSONException e) {
                         System.out.println();

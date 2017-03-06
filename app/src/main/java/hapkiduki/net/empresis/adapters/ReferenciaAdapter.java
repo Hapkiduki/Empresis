@@ -37,6 +37,7 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.nombre.setText(referencias.get(position).getNomref());
         holder.id.setText(referencias.get(position).getCodRef());
+        holder.itemView.setTag(referencias.get(position));
     }
 
     @Override
@@ -62,5 +63,15 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
         referencias = new ArrayList<>();
         referencias.addAll(query);
         notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 }

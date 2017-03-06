@@ -1,13 +1,62 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="hapkiduki.net.empresis.fragments.PedidosFragment">
+    android:orientation="vertical"
+    tools:context="hapkiduki.net.empresis.fragments.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="ESTADO DE PEDIDOS"/>
 
-</FrameLayout>
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:id="@+id/listaPedidos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <ImageView
+        android:id="@+id/imgSync"
+        android:layout_width="206dp"
+        android:layout_height="187dp"
+        android:layout_gravity="center"
+        android:src="@mipmap/pedido"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:layout_gravity="bottom">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Pedidos Sincronizados"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:textColor="@color/primary_text"/>
+
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/secondary_text"
+            android:text="No hay pedidos pendientes por sincronizar"
+            android:textAlignment="center"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

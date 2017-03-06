@@ -25,22 +25,28 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="hapkiduki.net.empresis" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity><![CDATA[
+        </activity>
         android:label="@string/title_activity_referencia_adapter"
         android:theme="@style/AppTheme.NoActionBar" />
-        ]]>
         <activity
             android:name=".TerceroActivity"
+            android:configChanges="screenSize|orientation"
             android:label="Terceros" />
         <activity
             android:name=".Activities.EmpresisActivity"
+            android:configChanges="screenSize|orientation"
             android:label="@string/title_activity_empresis"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activities.PedidosActivity"
+            android:label="@string/title_activity_pedidos"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

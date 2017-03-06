@@ -1,5 +1,6 @@
 package hapkiduki.net.empresis.Activities;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -68,8 +69,14 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                Intent intent;
+                intent= new Intent(EmpresisActivity.this,PedidosActivity.class);
+                startActivity(intent);
             }
         });
+
+
 
     }
 
