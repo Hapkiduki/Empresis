@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import hapkiduki.net.empresis.Activities.EmpresisActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -16,12 +18,13 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view) {
         Intent intent = null;
         switch (view.getId()){
-            case R.id.btnRefe:
-                intent = new Intent(MainActivity.this, ReferenciaActivity.class);
-                break;
 
             case R.id.btnTerce:
                 intent = new Intent(MainActivity.this, TerceroActivity.class);
+                break;
+            case R.id.btnPer:
+                intent = new Intent(MainActivity.this, EmpresisActivity.class);
+                break;
         }
         startActivity(intent);
     }

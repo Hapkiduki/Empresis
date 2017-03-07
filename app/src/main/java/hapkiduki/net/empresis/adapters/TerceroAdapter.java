@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hapkiduki.net.empresis.R;
@@ -50,6 +51,7 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
         holder.dni.setText(dni);
         holder.direccion.setText(direccion);
         holder.telefono.setText(telefono);
+
     }
 
     @Override
@@ -68,6 +70,15 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
             dni = (TextView) itemView.findViewById(R.id.tvDNI);
             direccion = (TextView) itemView.findViewById(R.id.tvDireccion);
             telefono = (TextView) itemView.findViewById(R.id.tvTelefono);
+
         }
+
+    }
+
+    //Agregamos un filtro Scope a nuestro recycler view
+    public void setFilter(ArrayList<Tercero> query){
+        terceros = new ArrayList<>();
+        terceros.addAll(query);
+        notifyDataSetChanged();
     }
 }

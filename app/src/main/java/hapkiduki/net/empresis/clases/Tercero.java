@@ -1,19 +1,24 @@
 package hapkiduki.net.empresis.clases;
 
+import com.orm.SugarRecord;
+
 /**
  * Created by Programa-PC on 01/03/2017.
  */
 
-public class Tercero {
+public class Tercero extends SugarRecord{
 
     private String tercero, direccion, telefono, dni;
 
-   /* public Tercero(int dni, String tercero, String direccion, String telefono) {
+    public Tercero() {
+    }
+
+    public Tercero(String dni, String tercero, String direccion, String telefono) {
         this.dni = dni;
         this.tercero = tercero;
         this.direccion = direccion;
         this.telefono = telefono;
-    }*/
+    }
 
     public String getDni() {
         return dni;

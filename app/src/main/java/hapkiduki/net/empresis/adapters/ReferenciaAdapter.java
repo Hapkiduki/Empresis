@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hapkiduki.net.empresis.R;
@@ -36,6 +37,7 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.nombre.setText(referencias.get(position).getNomref());
         holder.id.setText(referencias.get(position).getCodRef());
+        holder.itemView.setTag(referencias.get(position));
     }
 
     @Override
@@ -54,5 +56,22 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
             nombre = (TextView) itemView.findViewById(R.id.tvNom);
             id = (TextView) itemView.findViewById(R.id.tvId);
         }
+    }
+
+    //Creamos el filtro o Scope para recorrer nuestro recicler view
+    public void filter(ArrayList<Referencia> query){
+        referencias = new ArrayList<>();
+        referencias.addAll(query);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 }
