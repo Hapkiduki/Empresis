@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -20,10 +21,13 @@ import static android.text.TextUtils.isEmpty;
  * Created by Programa-PC on 01/03/2017.
  */
 
-public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHolder>{
+public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHolder> implements View.OnClickListener{
 
     private Context context;
     private List<Tercero> terceros;
+    //Puede generar error
+    private View.OnClickListener listener;
+
 
     public TerceroAdapter(Context context, List<Tercero> terceros) {
         this.context = context;
@@ -33,6 +37,8 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_terce, parent, false);
+        //puede generar error
+        itemView.setOnClickListener(this);
         return new ViewHolder(itemView);
     }
 
@@ -59,7 +65,17 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
         return terceros.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public void setOnClickListener(View.OnClickListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(listener != null)
+            listener.onClick(v);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView nombre, dni, direccion, telefono;
 
@@ -72,6 +88,7 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
             telefono = (TextView) itemView.findViewById(R.id.tvTelefono);
 
         }
+
 
     }
 
