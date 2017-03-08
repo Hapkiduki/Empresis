@@ -9,6 +9,8 @@ import com.orm.SugarRecord;
 public class Referencia extends SugarRecord{
 
     private String codRef, nomref;
+    //private double price;
+    //private float quantity;
 
     public Referencia() {
     }
@@ -16,8 +18,24 @@ public class Referencia extends SugarRecord{
     public Referencia(String codRef, String nomref) {
         this.codRef = codRef;
         this.nomref = nomref;
+      //  this.price = price;
+       // this.quantity = quantity;
+    }
+/*
+    public float getQuantity() {
+        return quantity;
     }
 
+    public void setQuantity(float quantity) {
+        this.quantity = quantity;
+    }
+
+    public double getPrice(){return  price;}
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+*/
     public String getCodRef() {
         return codRef;
     }

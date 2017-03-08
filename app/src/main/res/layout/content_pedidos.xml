@@ -30,7 +30,7 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="32dp">
+            android:layout_marginLeft="22dp">
 
             <EditText
                 android:id="@+id/ed_dni"
@@ -58,7 +58,7 @@
             android:id="@+id/til_telefono"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="32dp">
+            android:layout_marginLeft="22dp">
 
             <EditText
                 android:id="@+id/campo_telefono"
@@ -91,7 +91,7 @@
             android:id="@+id/til_correo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="32dp">
+            android:layout_marginLeft="22dp">
 
             <EditText
                 android:id="@+id/campo_direccion"
@@ -99,10 +99,29 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Dirección"
-                android:inputType="textEmailAddress"
-                android:singleLine="true" />
+                android:inputType="textEmailAddress" />
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
+
+    <TextView
+        android:text="ORDEN DE PEDIDO"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/area_correo"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="135dp"
+        android:layout_marginTop="28dp"
+        android:id="@+id/textView4" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_produ"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView4"/>
+
 
 
 </RelativeLayout>

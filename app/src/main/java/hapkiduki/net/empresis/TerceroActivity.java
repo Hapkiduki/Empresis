@@ -55,10 +55,10 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
         request = Volley.newRequestQueue(this);
 
         cargarWebServiceImagenes();
+
     }
 
-
-    private void cargarWebServiceImagenes() {
+   private void cargarWebServiceImagenes() {
         pDialog=new ProgressDialog(this);
         pDialog.setMessage("Cargando Terceros...");
         pDialog.show();
@@ -67,7 +67,7 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.105/empresis/WsJSONConsultaTercero.php";
+            String url = "http://192.168.0.104/empresis/WsJSONConsultaTercero.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -100,7 +100,7 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                             terceros.save();
                         }
                         pDialog.hide();
-                       // TerceroAdapter miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
+                        TerceroAdapter miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
                         miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
                         recyclerTerceros.setAdapter(miAdapter);
                         //////////////
@@ -138,6 +138,7 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
              * Traemos la lista de terceros de manera local con sugar y lo
              * Bindamos al Reciclerview
              */
+
             listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
             miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
             recyclerTerceros.setAdapter(miAdapter);
