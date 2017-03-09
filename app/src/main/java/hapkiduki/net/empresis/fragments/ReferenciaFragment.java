@@ -126,6 +126,8 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                             JSONObject jsonArrayChild=json.getJSONObject(i);
                             referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
                             referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
+                            referencias.setPrice("2500");
+                            referencias.setQuantity("15");
                             listaRefe.add(referencias);
                             //System.out.println(referencias.getNomref().toString());
                             /**

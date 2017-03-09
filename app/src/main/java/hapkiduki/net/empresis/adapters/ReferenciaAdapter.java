@@ -50,6 +50,7 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
         TextView nombre;
         TextView id;
 
+
         public ViewHolder(View itemView) {
             super(itemView);
 

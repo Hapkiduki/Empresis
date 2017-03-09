@@ -9,33 +9,33 @@ import com.orm.SugarRecord;
 public class Referencia extends SugarRecord{
 
     private String codRef, nomref;
-    //private double price;
-    //private float quantity;
+    private String price;
+    private String quantity;
 
     public Referencia() {
     }
 
-    public Referencia(String codRef, String nomref) {
+    public Referencia(String codRef, String nomref, String price, String quantity) {
         this.codRef = codRef;
         this.nomref = nomref;
-      //  this.price = price;
-       // this.quantity = quantity;
-    }
-/*
-    public float getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(float quantity) {
+        this.price = price;
         this.quantity = quantity;
     }
 
-    public double getPrice(){return  price;}
+    public String getQuantity() {
+        return quantity;
+    }
 
-    public void setPrice(double price) {
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getPrice(){return  price;}
+
+    public void setPrice(String price) {
         this.price = price;
     }
-*/
+
     public String getCodRef() {
         return codRef;
     }

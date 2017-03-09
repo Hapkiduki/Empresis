@@ -5,9 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,7 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder
     private Context context;
     private List<Referencia> referencias;
 
+
     public PedidoAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
         this.referencias = referencias;
@@ -37,10 +40,24 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(PedidoAdapter.ViewHolder holder, int position) {
-        holder.nombre.setText(referencias.get(position).getNomref());
-        holder.id.setText(referencias.get(position).getCodRef());
+    public void onBindViewHolder(PedidoAdapter.ViewHolder holder, final int position) {
+        holder.product.setText(referencias.get(position).getNomref());
+        holder.quantity.setText(referencias.get(position).getQuantity());
+        holder.price.setText(referencias.get(position).getPrice());
         holder.itemView.setTag(referencias.get(position));
+
+        holder.x.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeItem(referencias, position);
+            }
+        });
+
+    }
+
+    private void removeItem(List<Referencia> referencias, int position) {
+        referencias.remove(position);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -50,17 +67,17 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView nombre;
-        TextView id;
-        //ImageButton x;
+        TextView product;
+        TextView quantity, price;
+        Button x;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            nombre = (TextView) itemView.findViewById(R.id.tvNom);
-            id = (TextView) itemView.findViewById(R.id.tvId);
-            //otro = (TextView) itemView.findViewById(R.id.tvId);
-            //x = (ImageButton) itemView.findViewById(R.id.btnDelete);
+            product = (TextView) itemView.findViewById(R.id.tvProduct);
+            quantity = (TextView) itemView.findViewById(R.id.tvQuantity);
+            price =  (TextView) itemView.findViewById(R.id.tvPrice);
+            x = (Button) itemView.findViewById(R.id.btnDelete);
         }
     }
 
