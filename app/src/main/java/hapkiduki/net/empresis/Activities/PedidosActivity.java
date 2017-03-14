@@ -15,15 +15,16 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import hapkiduki.net.empresis.R;
+import hapkiduki.net.empresis.ReferenciaDialog;
 import hapkiduki.net.empresis.TerceroDialog;
 import hapkiduki.net.empresis.adapters.PedidoAdapter;
 import hapkiduki.net.empresis.adapters.TerceroAdapter;
 import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
-public class PedidosActivity extends AppCompatActivity implements TerceroDialog.TerceroDialogListner{
+public class PedidosActivity extends AppCompatActivity implements TerceroDialog.TerceroDialogListner, ReferenciaDialog.IProductos{
 
-    RecyclerView recyclerTerceros;
+    RecyclerView recyclerProdu;
     ArrayList<Referencia> listaTerce;
     PedidoAdapter miAdapter;
     TextView dni, telefono, direccion;
@@ -38,9 +39,9 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         setSupportActionBar(toolbar);
 
         listaTerce=new ArrayList<Referencia>();
-        recyclerTerceros = (RecyclerView) findViewById(R.id.recycler_produ);
-        recyclerTerceros.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
-        recyclerTerceros.setHasFixedSize(true);
+        recyclerProdu = (RecyclerView) findViewById(R.id.recycler_produ);
+        recyclerProdu.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
+        recyclerProdu.setHasFixedSize(true);
 
         dni = (TextView) findViewById(R.id.ed_dni);
         telefono = (TextView) findViewById(R.id.campo_telefono);
@@ -58,9 +59,11 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
               /*  Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 */
-                // mostrarTerceros();
-                cargarDatos();
+  //              cargarDatos();
+                crearPedido();
             }
+
+            
         });
 
         dni.setOnClickListener(new View.OnClickListener() {
@@ -71,11 +74,18 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         });
     }
 
-    private void cargarDatos() {
+    private void crearPedido() {
+        FragmentManager fragmentManager = getFragmentManager();
+        ReferenciaDialog referenciaDialog = new ReferenciaDialog();
+        referenciaDialog.show(fragmentManager, "dialogRef");
+
+    }
+
+    private void cargarDatos(ArrayList<Referencia> productos) {
         Toast.makeText(this, "Entra bien", Toast.LENGTH_SHORT).show();
-            listaTerce = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
-            miAdapter=new PedidoAdapter(getApplicationContext(),listaTerce);
-            recyclerTerceros.setAdapter(miAdapter);
+           // listaTerce = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+            miAdapter=new PedidoAdapter(getApplicationContext(),productos);
+        recyclerProdu.setAdapter(miAdapter);
 
 
     }
@@ -84,7 +94,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     private void mostrarTerceros() {
         FragmentManager fragmentManager = getFragmentManager();
         TerceroDialog terceroDialog = new TerceroDialog();
-        terceroDialog.show(fragmentManager, "dialog");
+        terceroDialog.show(fragmentManager, "dialogTer");
 
     }
 
@@ -101,5 +111,11 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
 
+    }
+
+    @Override
+    public void enviaParametros(ArrayList<Referencia> productos, int posicion) {
+        Toast.makeText(this, "Selección:"+productos.get(posicion).getNomref(), Toast.LENGTH_LONG).show();
+        cargarDatos(productos);
     }
 }

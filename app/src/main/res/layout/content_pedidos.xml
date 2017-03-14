@@ -103,24 +103,15 @@
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
-    <TextView
-        android:text="ORDEN DE PEDIDO"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/area_correo"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="135dp"
-        android:layout_marginTop="28dp"
-        android:id="@+id/textView4" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_produ"
+        android:layout_marginTop="26dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/textView4"/>
+        android:layout_below="@+id/area_correo"/>
 
 
 

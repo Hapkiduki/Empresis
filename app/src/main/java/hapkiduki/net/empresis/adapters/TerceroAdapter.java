@@ -29,7 +29,7 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
     private View.OnClickListener listener;
 
 
-    public TerceroAdapter(Context context, List<Tercero> terceros) {
+    public TerceroAdapter(Context context, ArrayList<Tercero> terceros) {
         this.context = context;
         this.terceros = terceros;
     }

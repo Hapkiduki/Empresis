@@ -17,10 +17,12 @@ import hapkiduki.net.empresis.clases.Referencia;
  * Created by Programa-PC on 01/03/2017.
  */
 
-public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.ViewHolder>{
+public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.ViewHolder> implements View.OnClickListener{
 
     private Context context;
     private List<Referencia> referencias;
+    //para cambios
+    private View.OnClickListener listener;
 
     public ReferenciaAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
@@ -30,6 +32,7 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list, parent, false);
+        itemView.setOnClickListener(this);
         return new ViewHolder(itemView);
     }
 
@@ -44,6 +47,15 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public int getItemCount() {
         return referencias.size();
     }
+
+    public void setOnClick(View.OnClickListener listener){this.listener = listener;}
+
+    @Override
+    public void onClick(View v) {
+        if(listener != null)
+            listener.onClick(v);
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
