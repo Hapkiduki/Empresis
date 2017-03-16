@@ -14,7 +14,6 @@ import android.view.Window;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.clases.Referencia;
@@ -31,11 +30,14 @@ public class ReferenciaDialog extends DialogFragment {
     ReferenciaAdapter miAdapter;
     Activity actividad;
 
+    ArrayList<Referencia> lista;
+
+
     /**
      * @return Creamos la interface que nos permitirá comunicarnos con la activity
      */
     public interface IProductos{
-        public void enviaParametros(ArrayList<Referencia> productos, int posicion);
+        public void enviaParametros(ArrayList<Referencia> productos);
     }
 
     IProductos listener;
@@ -49,7 +51,6 @@ public class ReferenciaDialog extends DialogFragment {
         recyclerReferencias = (RecyclerView) vista.findViewById(R.id.recycler_view);
         recyclerReferencias.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerReferencias.setHasFixedSize(true);
-
 
         cargarWebServiceImagenes();
 
@@ -67,18 +68,22 @@ public class ReferenciaDialog extends DialogFragment {
     private void cargarWebServiceImagenes() {
         listaReferencia = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
         miAdapter=new ReferenciaAdapter(getActivity(),listaReferencia);
+        lista = new ArrayList<Referencia>();;
         miAdapter.setOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Referencia> lista = new ArrayList<Referencia>();
                 Toast.makeText(getActivity(), "Selecciona el elemento: "+
                         listaReferencia.get(recyclerReferencias.getChildPosition(v)).getNomref(), Toast.LENGTH_SHORT).show();
                 dismiss();
-                listener.enviaParametros(listaReferencia, recyclerReferencias.getChildPosition(v));
+
+                int posicion = recyclerReferencias.getChildPosition(v);
+                lista.add(listaReferencia.get(posicion));
+                listener.enviaParametros(lista);
 
             }
         });
         recyclerReferencias.setAdapter(miAdapter);
+
     }
 
     //Metodo para instanciar nuestro listener

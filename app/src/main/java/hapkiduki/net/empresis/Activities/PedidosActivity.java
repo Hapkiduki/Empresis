@@ -18,7 +18,6 @@ import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.ReferenciaDialog;
 import hapkiduki.net.empresis.TerceroDialog;
 import hapkiduki.net.empresis.adapters.PedidoAdapter;
-import hapkiduki.net.empresis.adapters.TerceroAdapter;
 import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
@@ -83,7 +82,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
     private void cargarDatos(ArrayList<Referencia> productos) {
         Toast.makeText(this, "Entra bien", Toast.LENGTH_SHORT).show();
-           // listaTerce = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+            listaTerce = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
             miAdapter=new PedidoAdapter(getApplicationContext(),productos);
         recyclerProdu.setAdapter(miAdapter);
 
@@ -114,8 +113,10 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     }
 
     @Override
-    public void enviaParametros(ArrayList<Referencia> productos, int posicion) {
-        Toast.makeText(this, "Selección:"+productos.get(posicion).getNomref(), Toast.LENGTH_LONG).show();
+    public void enviaParametros(ArrayList<Referencia> productos) {
+        for (Referencia referencia : productos){
+            Toast.makeText(this, "productos:"+referencia.getNomref(), Toast.LENGTH_SHORT).show();
+        }
         cargarDatos(productos);
     }
 }
