@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import hapkiduki.net.empresis.Activities.EmpresisActivity;
+import hapkiduki.net.empresis.Activities.ReferenciasActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view) {
         Intent intent = null;
         switch (view.getId()){
+            case R.id.btnRefe:
+                intent = new Intent(MainActivity.this, ReferenciasActivity.class);
+                break;
 
             case R.id.btnTerce:
                 intent = new Intent(MainActivity.this, TerceroActivity.class);

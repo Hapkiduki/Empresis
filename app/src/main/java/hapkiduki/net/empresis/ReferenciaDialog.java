@@ -3,14 +3,19 @@ package hapkiduki.net.empresis;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,12 +30,15 @@ import hapkiduki.net.empresis.clases.Referencia;
 public class ReferenciaDialog extends DialogFragment {
 
     View vista;
+
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaReferencia;
     ReferenciaAdapter miAdapter;
     Activity actividad;
 
     ArrayList<Referencia> lista;
+
+    boolean mIsLargeLayout;
 
 
     /**
@@ -47,12 +55,17 @@ public class ReferenciaDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         vista = inflater.inflate(R.layout.fragment_referencia, container);
 
+
         listaReferencia=new ArrayList<Referencia>();
         recyclerReferencias = (RecyclerView) vista.findViewById(R.id.recycler_view);
         recyclerReferencias.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerReferencias.setHasFixedSize(true);
+        lista = new ArrayList<Referencia>();
 
-        cargarWebServiceImagenes();
+        mIsLargeLayout = true;
+
+
+        cargarWebService();
 
         return vista;
 
@@ -62,27 +75,29 @@ public class ReferenciaDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         return dialog;
     }
 
-    private void cargarWebServiceImagenes() {
+    private void cargarWebService() {
         listaReferencia = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
         miAdapter=new ReferenciaAdapter(getActivity(),listaReferencia);
-        lista = new ArrayList<Referencia>();;
+        //lista = new ArrayList<Referencia>();
         miAdapter.setOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "Selecciona el elemento: "+
                         listaReferencia.get(recyclerReferencias.getChildPosition(v)).getNomref(), Toast.LENGTH_SHORT).show();
                 dismiss();
-
                 int posicion = recyclerReferencias.getChildPosition(v);
                 lista.add(listaReferencia.get(posicion));
                 listener.enviaParametros(lista);
 
             }
         });
+
         recyclerReferencias.setAdapter(miAdapter);
+
 
     }
 
@@ -96,6 +111,7 @@ public class ReferenciaDialog extends DialogFragment {
             throw new ClassCastException(activity.toString() + " Debe implementar la interface");
         }
     }
+
 
 
 

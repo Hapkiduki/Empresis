@@ -63,6 +63,11 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        /**
+         * set table mode es para que se adapte el texto de los tabs
+         */
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override

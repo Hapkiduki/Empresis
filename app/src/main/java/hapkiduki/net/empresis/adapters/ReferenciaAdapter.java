@@ -5,11 +5,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import hapkiduki.net.empresis.Activities.ReferenciasActivity;
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.clases.Referencia;
 
@@ -33,14 +36,23 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list, parent, false);
         itemView.setOnClickListener(this);
+
+
         return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.nombre.setText(referencias.get(position).getNomref());
         holder.id.setText(referencias.get(position).getCodRef());
+        holder.chkProdu.setChecked(referencias.get(position).getState());
         holder.itemView.setTag(referencias.get(position));
+
+
+        if (context.toString().contains("EmpresisActivity")) {
+            holder.chkProdu.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     @Override
@@ -57,10 +69,12 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView nombre;
         TextView id;
+        CheckBox chkProdu;
+
 
 
         public ViewHolder(View itemView) {
@@ -68,6 +82,14 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
             nombre = (TextView) itemView.findViewById(R.id.tvNom);
             id = (TextView) itemView.findViewById(R.id.tvId);
+            chkProdu = (CheckBox) itemView.findViewById(R.id.chkProdu);
+
+            chkProdu.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            System.out.println("Posicion: "+getAdapterPosition());
         }
     }
 
@@ -87,4 +109,6 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public int getItemViewType(int position) {
         return position;
     }
+
+
 }

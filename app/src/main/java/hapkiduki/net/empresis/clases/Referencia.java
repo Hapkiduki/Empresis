@@ -11,15 +11,17 @@ public class Referencia extends SugarRecord{
     private String codRef, nomref;
     private String price;
     private String quantity;
+    private Boolean state;
 
     public Referencia() {
     }
 
-    public Referencia(String codRef, String nomref, String price, String quantity) {
+    public Referencia(String codRef, String nomref, String price, String quantity, Boolean state) {
         this.codRef = codRef;
         this.nomref = nomref;
         this.price = price;
         this.quantity = quantity;
+        this.state = state;
     }
 
     public String getQuantity() {
@@ -50,5 +52,11 @@ public class Referencia extends SugarRecord{
 
     public void setNomref(String nomref) {
         this.nomref = nomref;
+    }
+
+    public Boolean getState(){return state;}
+
+    public void setState(Boolean state) {
+        this.state = state;
     }
 }

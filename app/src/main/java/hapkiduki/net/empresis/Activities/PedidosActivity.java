@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
@@ -78,15 +79,14 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         ReferenciaDialog referenciaDialog = new ReferenciaDialog();
         referenciaDialog.show(fragmentManager, "dialogRef");
 
+
     }
 
     private void cargarDatos(ArrayList<Referencia> productos) {
-        Toast.makeText(this, "Entra bien", Toast.LENGTH_SHORT).show();
-            listaTerce = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
-            miAdapter=new PedidoAdapter(getApplicationContext(),productos);
+        listaTerce = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+        miAdapter=new PedidoAdapter(getApplicationContext(),productos);
         recyclerProdu.setAdapter(miAdapter);
-
-
+        recyclerProdu.scrollToPosition(miAdapter.getItemCount() - 1);
     }
 
 
@@ -114,9 +114,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
     @Override
     public void enviaParametros(ArrayList<Referencia> productos) {
-        for (Referencia referencia : productos){
-            Toast.makeText(this, "productos:"+referencia.getNomref(), Toast.LENGTH_SHORT).show();
-        }
         cargarDatos(productos);
     }
 }
