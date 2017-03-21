@@ -1,18 +1,18 @@
 package hapkiduki.net.empresis.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import hapkiduki.net.empresis.Activities.ReferenciasActivity;
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.clases.Referencia;
 
@@ -22,10 +22,13 @@ import hapkiduki.net.empresis.clases.Referencia;
 
 public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.ViewHolder> implements View.OnClickListener{
 
+
     private Context context;
     private List<Referencia> referencias;
     //para cambios
     private View.OnClickListener listener;
+    List<Integer> lista;
+
 
     public ReferenciaAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
@@ -37,23 +40,43 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list, parent, false);
         itemView.setOnClickListener(this);
 
-
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+        final Referencia referencia = referencias.get(position);
+
         holder.nombre.setText(referencias.get(position).getNomref());
         holder.id.setText(referencias.get(position).getCodRef());
-        holder.chkProdu.setChecked(referencias.get(position).getState());
+
         holder.itemView.setTag(referencias.get(position));
 
+         lista = new ArrayList<>();
 
-        if (context.toString().contains("EmpresisActivity")) {
-            holder.chkProdu.setVisibility(View.INVISIBLE);
-        }
+        //holder.itemView.setBackgroundColor(referencia.getState() ? Color.CYAN : Color.DKGRAY);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                referencia.setState(!referencia.getState());
+                holder.itemView.setBackgroundColor(referencia.getState() ? Color.CYAN : Color.TRANSPARENT);
+
+                if(referencia.getState()){
+                    lista.add(position);
+                }
+
+                for(int x : lista){
+                    System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                            "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxSelecciona: "+x+1);
+                }
+            }
+        });
+
+
 
     }
+
 
     @Override
     public int getItemCount() {
@@ -66,15 +89,15 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public void onClick(View v) {
         if(listener != null)
             listener.onClick(v);
+
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
+
 
         TextView nombre;
         TextView id;
-        CheckBox chkProdu;
-
 
 
         public ViewHolder(View itemView) {
@@ -82,18 +105,14 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
             nombre = (TextView) itemView.findViewById(R.id.tvNom);
             id = (TextView) itemView.findViewById(R.id.tvId);
-            chkProdu = (CheckBox) itemView.findViewById(R.id.chkProdu);
 
-            chkProdu.setOnClickListener(this);
+
         }
 
-        @Override
-        public void onClick(View v) {
-            System.out.println("Posicion: "+getAdapterPosition());
-        }
+
     }
 
-    //Creamos el filtro o Scope para recorrer nuestro recicler view
+    /** Creamos el filtro o Scope para recorrer nuestro recicler view */
     public void filter(ArrayList<Referencia> query){
         referencias = new ArrayList<>();
         referencias.addAll(query);

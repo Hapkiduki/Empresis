@@ -4,18 +4,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -31,17 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
-import hapkiduki.net.empresis.adapters.TerceroAdapter;
 import hapkiduki.net.empresis.clases.Referencia;
-import hapkiduki.net.empresis.clases.Tercero;
 
 public class ReferenciasActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
-    private int contador;
 
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaRefe;
@@ -50,6 +43,8 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
     ReferenciaAdapter miAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +60,7 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
 
         cargarWebServiceImagenes();
 
+
     }
 
     private void cargarWebServiceImagenes() {
@@ -76,13 +72,13 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.103/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.1.54/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Referencia referencias;
 
-                    /*
+                    /**
                     * Traemos la lista local de referencias mediante la librería Sugar
                     * y los eliminamos
                     * */
@@ -187,17 +183,7 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
         return true;
     }
 
-    public void agregarProductos(View v, int posicion){
-        List<Referencia> lista = new ArrayList<Referencia>();
 
-        if (((CheckBox)v).isChecked()){
-            lista.add(listaRefe.get(posicion));
-            contador++;
-        }else{
-            lista.remove(posicion);
-            contador--;
-        }
 
-        Toast.makeText(this, "Items seleccionados: "+contador, Toast.LENGTH_SHORT).show();
-    }
+
 }

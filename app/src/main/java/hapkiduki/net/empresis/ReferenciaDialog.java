@@ -3,19 +3,14 @@ package hapkiduki.net.empresis;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.CheckBox;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,7 +31,7 @@ public class ReferenciaDialog extends DialogFragment {
     ReferenciaAdapter miAdapter;
     Activity actividad;
 
-    ArrayList<Referencia> lista;
+    ArrayList<Referencia> lista = new ArrayList<>();
 
     boolean mIsLargeLayout;
 
@@ -60,7 +55,7 @@ public class ReferenciaDialog extends DialogFragment {
         recyclerReferencias = (RecyclerView) vista.findViewById(R.id.recycler_view);
         recyclerReferencias.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerReferencias.setHasFixedSize(true);
-        lista = new ArrayList<Referencia>();
+        //lista = new ArrayList<Referencia>();
 
         mIsLargeLayout = true;
 
@@ -86,9 +81,11 @@ public class ReferenciaDialog extends DialogFragment {
         miAdapter.setOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(getActivity(), "Selecciona el elemento: "+
                         listaReferencia.get(recyclerReferencias.getChildPosition(v)).getNomref(), Toast.LENGTH_SHORT).show();
                 dismiss();
+
                 int posicion = recyclerReferencias.getChildPosition(v);
                 lista.add(listaReferencia.get(posicion));
                 listener.enviaParametros(lista);
