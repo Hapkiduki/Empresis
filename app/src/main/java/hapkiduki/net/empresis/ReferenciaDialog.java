@@ -78,7 +78,7 @@ public class ReferenciaDialog extends DialogFragment {
         listaReferencia = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
         miAdapter=new ReferenciaAdapter(getActivity(),listaReferencia);
         //lista = new ArrayList<Referencia>();
-        miAdapter.setOnClick(new View.OnClickListener() {
+       /* miAdapter.setOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -91,7 +91,7 @@ public class ReferenciaDialog extends DialogFragment {
                 listener.enviaParametros(lista);
 
             }
-        });
+        });*/
 
         recyclerReferencias.setAdapter(miAdapter);
 

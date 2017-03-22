@@ -81,7 +81,7 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
                     /**
                     * Traemos la lista local de referencias mediante la librería Sugar
                     * y los eliminamos
-                    * */
+                    */
                     listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
                     Referencia.deleteAll(Referencia.class);
                     try {

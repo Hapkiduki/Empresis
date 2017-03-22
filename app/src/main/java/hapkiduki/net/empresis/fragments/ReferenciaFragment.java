@@ -6,12 +6,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +41,8 @@ import java.util.zip.Inflater;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
+import hapkiduki.net.empresis.clases.RecyclerClick;
+import hapkiduki.net.empresis.clases.RecyclerTouch;
 import hapkiduki.net.empresis.clases.Referencia;
 
 import static hapkiduki.net.empresis.R.id.container;
@@ -55,6 +61,8 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
     ReferenciaAdapter miAdapter;
+
+
 
     public ReferenciaFragment() {
 
@@ -91,9 +99,49 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
         request = Volley.newRequestQueue(vista.getContext());
 
         cargarWebServiceImagenes();
-        // Inflate the layout for this fragment
+
+        implementarInterfaz();
         return vista;
     }
+
+    private void implementarInterfaz() {
+        recyclerReferencias.addOnItemTouchListener(new RecyclerTouch(getActivity(), recyclerReferencias, new RecyclerClick() {
+            @Override
+            public void onClick(View view, int position) {
+
+                obtenerSeleccionados(position);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                Toast.makeText(getActivity(), "Dios te ama", Toast.LENGTH_LONG).show();
+            }
+        }));
+    }
+
+    private void obtenerSeleccionados(int position) {
+        miAdapter.toggleSelection(position);
+
+        boolean hasCheckedItems = miAdapter.getSelectedCount() > 0;
+
+        if (hasCheckedItems)
+            Toast.makeText(getActivity(), "Selecciona: "+miAdapter.getSelectedCount(), Toast.LENGTH_LONG).show();
+
+        SparseBooleanArray selected = miAdapter.getSelectedIds();
+
+        //Loop all selected ids
+        for (int i = (selected.size() - 1); i >= 0; i--) {
+            /*if (selected.valueAt(i)) {
+                //If current id is selected remove the item via key
+                item_models.remove(selected.keyAt(i));
+                adapter.notifyDataSetChanged();//notify adapter
+
+            }*/
+            Toast.makeText(getActivity(), "Selecciona el id: "+selected.keyAt(i), Toast.LENGTH_LONG).show();
+        }
+        Snackbar.make(vista, selected.size() + " item deleted.", Snackbar.LENGTH_LONG).show();
+
+            }
 
     private void cargarWebServiceImagenes() {
 
@@ -105,7 +153,7 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                 vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.103/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.1.54/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
