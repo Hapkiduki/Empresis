@@ -32,7 +32,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Lista de Refencias"
+        android:text="Lista de Referencias"
         android:id="@+id/btnRefe"
         android:background="@color/colorAccent"
         android:textColor="@color/icons"

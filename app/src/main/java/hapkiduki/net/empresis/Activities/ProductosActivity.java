@@ -2,17 +2,21 @@ package hapkiduki.net.empresis.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -27,13 +31,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
+import hapkiduki.net.empresis.clases.RecyclerClick;
+import hapkiduki.net.empresis.clases.RecyclerTouch;
 import hapkiduki.net.empresis.clases.Referencia;
 
-public class ReferenciasActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+
 
 
     RecyclerView recyclerReferencias;
@@ -43,14 +52,16 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
     ReferenciaAdapter miAdapter;
+    List<Integer> listaSeleccionados;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_referencias);
+        setContentView(R.layout.activity_productos);
 
+        listaSeleccionados = new ArrayList<>();
         listaRefe=new ArrayList<Referencia>();
         recyclerReferencias = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerReferencias.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
@@ -60,28 +71,71 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
 
         cargarWebServiceImagenes();
 
+        implementarInterfaz();
+        //return vista;
+    }
+
+
+
+
+
+
+
+    private void implementarInterfaz() {
+        recyclerReferencias.addOnItemTouchListener(new RecyclerTouch(getApplication(), recyclerReferencias, new RecyclerClick() {
+            @Override
+            public void onClick(View view, int position) {
+
+                obtenerSeleccionados(position);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                Toast.makeText(getApplicationContext(), "Cristo te ama", Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+    private void obtenerSeleccionados(int position) {
+
+        miAdapter.toggleSelection(position);
+
+        boolean hasCheckedItems = miAdapter.getSelectedCount() > 0;
+
+
+        SparseBooleanArray selected = miAdapter.getSelectedIds();
+
+        //Loop all selected ids
+        for (int i = (selected.size() - 1); i >= 0; i--) {
+            if (selected.valueAt(i)) {
+                listaSeleccionados.add(selected.keyAt(i));
+            }
+        }
+        Snackbar.make(this.recyclerReferencias, selected.size() + " Productos seleccionados.", Snackbar.LENGTH_LONG).show();
 
     }
 
+
     private void cargarWebServiceImagenes() {
+
         pDialog=new ProgressDialog(this);
-        pDialog.setMessage("Cargando Referencias...");
+        pDialog.setMessage("Cargando Productos...");
         pDialog.show();
 
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.1.54/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.0.103/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Referencia referencias;
 
-                    /**
+                    /*
                     * Traemos la lista local de referencias mediante la librería Sugar
                     * y los eliminamos
-                    */
+                    * */
                     listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
                     Referencia.deleteAll(Referencia.class);
                     try {
@@ -106,11 +160,9 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
                         pDialog.dismiss();
                         //ReferenciaAdapter miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
 
-                        ReferenciaAdapter miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
+
                         miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
                         recyclerReferencias.setAdapter(miAdapter);
-                        //////////////
-                        miAdapter.notifyDataSetChanged();
 
                     } catch (JSONException e) {
                         System.out.println();
@@ -124,9 +176,15 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getApplication(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
+
+                    pDialog.dismiss();
+                    if (error.toString().contains("com.android.volley.NoConnectionError")){
+                        Toast.makeText(getApplication(), "No se puede conectar, verifique que el servidor se encuentre disponible", Toast.LENGTH_LONG).show();
+                    }else{
+                        Toast.makeText(getApplication(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
+                    }
+
                     System.out.println();
-                    pDialog.hide();
                     Log.d("ERROR: ", error.toString());
                 }
             });
@@ -139,17 +197,21 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
         } else {
             Toast.makeText(getApplication(), "No se pudo sincronizar, Verifique que " +
                     "cuenta con acceso a Internet", Toast.LENGTH_LONG).show();
-            pDialog.hide();
-            /*
-             * Traemos la lista de terceros de manera local con sugar y lo
-             * Bindamos al Reciclerview
+            pDialog.dismiss();
+
+            /**
+             * Cargamos los datos al recicler view de forma local
+             * con SUGAR
              */
 
             listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
-            miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
+            miAdapter=new ReferenciaAdapter(getApplication(),listaRefe);
             recyclerReferencias.setAdapter(miAdapter);
+
         }
     }
+
+    //Agregamos los metodos necesarios para nuestro Scope
 
     //Agregamos el Menu o scope
     @Override
@@ -161,7 +223,32 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
         return true;
     }
 
-    @Override
+
+    // TODO: Rename method, update argument and hook method into UI event
+    /*public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }*/
+
+  /*  @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }*/
+
+   /* @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }*/
+
+  /*  @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
@@ -184,6 +271,31 @@ public class ReferenciasActivity extends AppCompatActivity implements SearchView
     }
 
 
+   /* public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }*/
 
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        newText = newText.toLowerCase();
+        ArrayList<Referencia> query = new ArrayList<>();
+        //Esto es un foreach en java
+        for (Referencia referencia : listaRefe){
+            String nomRefe = referencia.getNomref().toLowerCase();
+            String codRef = referencia.getCodRef().toLowerCase();
+            if (nomRefe.contains(newText) || codRef.contains(newText)){
+                query.add(referencia);
+            }
+
+        }
+        miAdapter.filter(query);
+        return true;
+    }
 }

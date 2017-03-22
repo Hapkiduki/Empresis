@@ -196,7 +196,7 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Home";
+                    return "Inicio";
                 case 1:
                     return "Terceros";
                 case 2:

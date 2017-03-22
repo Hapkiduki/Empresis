@@ -1,12 +1,12 @@
 package hapkiduki.net.empresis;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import hapkiduki.net.empresis.Activities.EmpresisActivity;
-import hapkiduki.net.empresis.Activities.ReferenciasActivity;
+import hapkiduki.net.empresis.Activities.ProductosActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = null;
         switch (view.getId()){
             case R.id.btnRefe:
-                intent = new Intent(MainActivity.this, ReferenciasActivity.class);
+                intent = new Intent(MainActivity.this, ProductosActivity.class);
                 break;
 
             case R.id.btnTerce:

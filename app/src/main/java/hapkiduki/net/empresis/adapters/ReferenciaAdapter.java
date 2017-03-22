@@ -55,31 +55,10 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
         holder.itemView.setBackgroundColor(mSelectedItemsIds.get(position) ? 0x9934B5E4 : Color.TRANSPARENT);
 
-         //lista = new ArrayList<>();
-
-        //holder.itemView.setBackgroundColor(referencia.getState() ? Color.CYAN : Color.DKGRAY);
-       /* holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                referencia.setState(!referencia.getState());
-                holder.itemView.setBackgroundColor(referencia.getState() ? Color.CYAN : Color.TRANSPARENT);
-
-                if(referencia.getState()){
-                    lista.add(position);
-                }
-
-                for(int x : lista){
-                    System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
-                            "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxSelecciona: "+x);
-                }
-            }
-        });*/
-
-
 
     }
 
-//sujeto a cambios
+
     public void toggleSelection(int position) {
         selectView(position, !mSelectedItemsIds.get(position));
     }

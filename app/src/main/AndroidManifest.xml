@@ -49,7 +49,8 @@
             android:name=".Activities.PedidosActivity"
             android:label="@string/title_activity_pedidos"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activities.ReferenciasActivity"></activity>
+        <activity android:name=".Activities.ProductosActivity"
+            android:parentActivityName=".Activities.PedidosActivity"></activity>
     </application>
 
 </manifest>
