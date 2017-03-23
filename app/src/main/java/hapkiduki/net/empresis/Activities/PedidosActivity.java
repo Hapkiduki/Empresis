@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.TerceroDialog;
@@ -30,6 +32,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     PedidoAdapter miAdapter;
     TextView dni, telefono, direccion;
 
+    private static final int REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         setContentView(R.layout.activity_pedidos);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         listaTerce=new ArrayList<Referencia>();
         recyclerProdu = (RecyclerView) findViewById(R.id.recycler_produ);
@@ -77,10 +81,30 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
     private void crearPedido() {
         Intent intent = new Intent(PedidosActivity.this, ProductosActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent,REQUEST_CODE);
+
+
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+
+        if (requestCode == REQUEST_CODE){
+            if (resultCode == RESULT_OK) {
+               // String result = data.getStringExtra("Productos");
+
+                List<Referencia> lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
+                for (Referencia referencia : lista)
+                    Toast.makeText(this, "Selecciona: "  + referencia.getNomref(), Toast.LENGTH_SHORT).show();
+
+                miAdapter = new PedidoAdapter(this, lista);
+                recyclerProdu.setAdapter(miAdapter);
+
+            }
+}
+    }
 
     private void mostrarTerceros() {
         FragmentManager fragmentManager = getFragmentManager();

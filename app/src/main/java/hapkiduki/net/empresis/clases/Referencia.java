@@ -2,11 +2,13 @@ package hapkiduki.net.empresis.clases;
 
 import com.orm.SugarRecord;
 
+import java.io.Serializable;
+
 /**
  * Created by Programa-PC on 28/02/2017.
  */
 
-public class Referencia extends SugarRecord{
+public class Referencia extends SugarRecord implements Serializable{
 
     private String codRef, nomref;
     private String price;

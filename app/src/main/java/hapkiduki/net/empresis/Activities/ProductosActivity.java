@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,34 +54,51 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
     ReferenciaAdapter miAdapter;
-    List<Integer> listaSeleccionados;
+    List<Integer> listaPosiciones;
 
-
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_productos);
 
-        listaSeleccionados = new ArrayList<>();
+
         listaRefe=new ArrayList<Referencia>();
         recyclerReferencias = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerReferencias.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
         recyclerReferencias.setHasFixedSize(true);
+
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         request = Volley.newRequestQueue(this);
 
         cargarWebServiceImagenes();
 
         implementarInterfaz();
-        //return vista;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        if (item.getItemId() == android.R.id.home) {
+                List<Referencia> items = new ArrayList<>();
+                for (int posicion : listaPosiciones){
+                    items.add(listaRefe.get(posicion));
+                }
+                Intent intent = new Intent();
+                intent.putExtra("Productos", (Serializable) items);
+                setResult(RESULT_OK, intent);
+                finish();
+                super.onBackPressed();
+                return true;
+        }
 
-
-
-
+        return super.onOptionsItemSelected(item);
+    }
 
     private void implementarInterfaz() {
         recyclerReferencias.addOnItemTouchListener(new RecyclerTouch(getApplication(), recyclerReferencias, new RecyclerClick() {
@@ -96,8 +115,9 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         }));
     }
 
-    private void obtenerSeleccionados(int position) {
 
+    private void obtenerSeleccionados(int position) {
+        listaPosiciones = new ArrayList<>();
         miAdapter.toggleSelection(position);
 
         boolean hasCheckedItems = miAdapter.getSelectedCount() > 0;
@@ -108,7 +128,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         //Loop all selected ids
         for (int i = (selected.size() - 1); i >= 0; i--) {
             if (selected.valueAt(i)) {
-                listaSeleccionados.add(selected.keyAt(i));
+                listaPosiciones.add(selected.keyAt(i));
             }
         }
         Snackbar.make(this.recyclerReferencias, selected.size() + " Productos seleccionados.", Snackbar.LENGTH_LONG).show();
@@ -222,59 +242,6 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         searchView.setOnQueryTextListener(this);
         return true;
     }
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-    /*public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }*/
-
-  /*  @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
-
-   /* @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }*/
-
-  /*  @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        newText = newText.toLowerCase();
-        ArrayList<Referencia> query = new ArrayList<>();
-        //Foreach
-        for (Referencia referencia : listaRefe){
-            String nomRefe = referencia.getNomref().toLowerCase();
-            String codRef = referencia.getCodRef().toLowerCase();
-
-            if (nomRefe.contains(newText) || codRef.contains(newText)){
-                query.add(referencia);
-            }
-        }
-        miAdapter.filter(query);
-        return true;
-    }
-
-
-   /* public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }*/
 
 
     @Override
