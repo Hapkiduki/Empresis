@@ -2,6 +2,7 @@ package hapkiduki.net.empresis.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -10,6 +11,7 @@ import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,7 @@ import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -45,8 +48,6 @@ import hapkiduki.net.empresis.clases.Referencia;
 
 public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
-
-
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaRefe;
     ProgressDialog pDialog;
@@ -57,6 +58,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     List<Integer> listaPosiciones;
 
     Intent intent;
+    int quantity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         recyclerReferencias.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
         recyclerReferencias.setHasFixedSize(true);
 
+        quantity = 0;
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -86,6 +89,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
         if (item.getItemId() == android.R.id.home) {
                 List<Referencia> items = new ArrayList<>();
+
                 for (int posicion : listaPosiciones){
                     items.add(listaRefe.get(posicion));
                 }
@@ -106,6 +110,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
             public void onClick(View view, int position) {
 
                 obtenerSeleccionados(position);
+                numberPickerDialog(position);
             }
 
             @Override
@@ -131,6 +136,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                 listaPosiciones.add(selected.keyAt(i));
             }
         }
+
         Snackbar.make(this.recyclerReferencias, selected.size() + " Productos seleccionados.", Snackbar.LENGTH_LONG).show();
 
     }
@@ -167,8 +173,8 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                             JSONObject jsonArrayChild=json.getJSONObject(i);
                             referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
                             referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
-                            referencias.setPrice("2500");
-                            referencias.setQuantity("15");
+                            referencias.setPrice(jsonArrayChild.optString("COSTOULTI"));
+                            referencias.setQuantity("1");
                             referencias.setState(false);
                             listaRefe.add(referencias);
                             //System.out.println(referencias.getNomref().toString());
@@ -265,4 +271,33 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         miAdapter.filter(query);
         return true;
     }
+
+    //Dialog para escojer la cantidad
+    private void numberPickerDialog(final int position){
+
+        final Referencia referencia = new Referencia();
+        NumberPicker numberPicker = new NumberPicker(this);
+        numberPicker.setMaxValue(100);
+        numberPicker.setMinValue(1);
+        NumberPicker.OnValueChangeListener changeListener = new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                quantity = newVal;
+                listaRefe.get(position).setQuantity(""+quantity);
+            }
+        };
+
+        numberPicker.setOnValueChangedListener(changeListener);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this).setView(numberPicker).setIcon(R.mipmap.ic_launcher);
+        dialog.setTitle("Cantidad de producto").setMessage("Seleccione la cantidad de producto a agregar entre 1 a 100");
+        dialog.setPositiveButton("Seleccionar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        dialog.show();
+    }
+
+
 }

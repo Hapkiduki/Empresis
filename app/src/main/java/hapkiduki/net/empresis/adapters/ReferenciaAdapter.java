@@ -1,12 +1,15 @@
 package hapkiduki.net.empresis.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,13 +22,11 @@ import hapkiduki.net.empresis.clases.Referencia;
  * Created by Programa-PC on 01/03/2017.
  */
 
-public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.ViewHolder> /*implements View.OnClickListener*/{
+public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.ViewHolder> {
 
 
     private Context context;
     private List<Referencia> referencias;
-    //para cambios
-    //private View.OnClickListener listener;
     private SparseBooleanArray mSelectedItemsIds;
 
 
@@ -38,15 +39,12 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list, parent, false);
-        //itemView.setOnClickListener(this);
 
         return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-
-        //final Referencia referencia = referencias.get(position);
 
         holder.nombre.setText(referencias.get(position).getNomref());
         holder.id.setText(referencias.get(position).getCodRef());
@@ -95,15 +93,6 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
         return referencias.size();
     }
 
-    /*public void setOnClick(View.OnClickListener listener){this.listener = listener;}
-
-    @Override
-    public void onClick(View v) {
-        if(listener != null)
-            listener.onClick(v);
-
-    }*/
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -140,6 +129,8 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public int getItemViewType(int position) {
         return position;
     }
+
+
 
 
 }
