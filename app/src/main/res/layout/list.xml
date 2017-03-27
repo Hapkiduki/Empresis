@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:clickable="true">
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
@@ -38,6 +40,8 @@
                 android:paddingLeft="5dp"
                 android:paddingBottom="5dp"
                 android:layout_below="@+id/tvNom"/>
+
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>

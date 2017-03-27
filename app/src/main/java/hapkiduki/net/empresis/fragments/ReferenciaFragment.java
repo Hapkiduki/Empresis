@@ -6,12 +6,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,19 +35,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
+import hapkiduki.net.empresis.clases.RecyclerClick;
+import hapkiduki.net.empresis.clases.RecyclerTouch;
 import hapkiduki.net.empresis.clases.Referencia;
-
-import static hapkiduki.net.empresis.R.id.container;
 
 
 public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTextListener{
 
-
-    private OnFragmentInteractionListener mListener;
     View vista;
 
     RecyclerView recyclerReferencias;
@@ -55,6 +54,8 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
     ReferenciaAdapter miAdapter;
+
+
 
     public ReferenciaFragment() {
 
@@ -89,9 +90,7 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
         recyclerReferencias.setHasFixedSize(true);
 
         request = Volley.newRequestQueue(vista.getContext());
-
         cargarWebServiceImagenes();
-        // Inflate the layout for this fragment
         return vista;
     }
 
@@ -105,16 +104,16 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                 vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.105/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.0.103/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Referencia referencias;
 
-                    /*
+                    /**
                     * Traemos la lista local de referencias mediante la librería Sugar
                     * y los eliminamos
-                    * */
+                    */
                     listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
                     Referencia.deleteAll(Referencia.class);
                     try {
@@ -126,17 +125,16 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                             JSONObject jsonArrayChild=json.getJSONObject(i);
                             referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
                             referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
+                            referencias.setPrice("COSTOULTI");
+                            referencias.setQuantity("1");
+                            referencias.setState(false);
                             listaRefe.add(referencias);
-                            //System.out.println(referencias.getNomref().toString());
                             /**
                              * Guardamos la lista de referencias de manera local con sugar
                              * */
                             referencias.save();
                         }
                         pDialog.dismiss();
-                        //ReferenciaAdapter miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
-
-
                         miAdapter=new ReferenciaAdapter(vista.getContext(),listaRefe);
                         recyclerReferencias.setAdapter(miAdapter);
 
@@ -145,6 +143,7 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                         e.printStackTrace();
                         pDialog.hide();
                         System.out.println(response);
+                        Snackbar.make(getView(), "No se ha podido establecer conexión con el servidor" +" "+response, Snackbar.LENGTH_SHORT).show();
                         Toast.makeText(vista.getContext(), "No se ha podido establecer conexión con el servidor" +
                                 " "+response, Toast.LENGTH_LONG).show();
                     }
@@ -156,12 +155,10 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                     pDialog.dismiss();
                     if (error.toString().contains("com.android.volley.NoConnectionError")){
                         Toast.makeText(vista.getContext(), "No se puede conectar, verifique que el servidor se encuentre disponible", Toast.LENGTH_LONG).show();
+
                     }else{
                         Toast.makeText(vista.getContext(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
                     }
-
-                    System.out.println();
-                    Log.d("ERROR: ", error.toString());
                 }
             });
 
@@ -171,16 +168,21 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
 
             request.add(jsonObjectRequest);
         } else {
-            Toast.makeText(vista.getContext(), "No se pudo sincronizar, Verifique que " +
-                    "cuenta con acceso a Internet", Toast.LENGTH_LONG).show();
+            Snackbar.make(getView(), "No se pudo sincronizar, Verifique que " +
+                    "cuenta con acceso a Internet", Snackbar.LENGTH_LONG).show();
             pDialog.dismiss();
 
             /**
              * Cargamos los datos al recicler view de forma local
              * con SUGAR
              */
-
             listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+            for (Referencia r
+                    : listaRefe) {
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"+r.getCodRef()+" "+r.getQuantity());
+            }
             miAdapter=new ReferenciaAdapter(vista.getContext(),listaRefe);
             recyclerReferencias.setAdapter(miAdapter);
 
@@ -188,8 +190,6 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
     }
 
     //Agregamos los metodos necesarios para nuestro Scope
-
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -197,31 +197,6 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
         MenuItem itemBuscar = menu.findItem(R.id.item_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemBuscar);
         searchView.setOnQueryTextListener(this);
-
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
     @Override

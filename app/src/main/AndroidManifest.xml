@@ -25,7 +25,8 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="hapkiduki.net.empresis" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,7 +48,9 @@
         <activity
             android:name=".Activities.PedidosActivity"
             android:label="@string/title_activity_pedidos"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.ProductosActivity"
+            android:parentActivityName=".Activities.PedidosActivity"></activity>
     </application>
 
 </manifest>
