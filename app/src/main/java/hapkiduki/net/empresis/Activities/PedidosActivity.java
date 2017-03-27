@@ -3,20 +3,22 @@ package hapkiduki.net.empresis.Activities;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import hapkiduki.net.empresis.R;
@@ -25,14 +27,19 @@ import hapkiduki.net.empresis.adapters.PedidoAdapter;
 import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
-public class PedidosActivity extends AppCompatActivity implements TerceroDialog.TerceroDialogListner{
+public class PedidosActivity extends AppCompatActivity implements TerceroDialog.TerceroDialogListner, SearchView.OnQueryTextListener{
 
     RecyclerView recyclerProdu;
-    ArrayList<Referencia> listaTerce;
+   // ArrayList<Referencia> listaTerce;
+    List<Tercero> listaTerce;
     PedidoAdapter miAdapter;
     TextView dni, telefono, direccion;
 
     private static final int REQUEST_CODE = 1;
+
+    List<Referencia> lista;
+    int posFin;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +49,9 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         setSupportActionBar(toolbar);
 
 
-        listaTerce=new ArrayList<Referencia>();
+        lista = new ArrayList<>();
+        listaTerce = new ArrayList<>();
+        //listaTerce=new ArrayList<Referencia>();
         recyclerProdu = (RecyclerView) findViewById(R.id.recycler_produ);
         recyclerProdu.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
         recyclerProdu.setHasFixedSize(true);
@@ -50,6 +59,8 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         dni = (TextView) findViewById(R.id.ed_dni);
         telefono = (TextView) findViewById(R.id.campo_telefono);
         direccion = (TextView) findViewById(R.id.campo_direccion);
+
+        posFin = 0;
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -60,7 +71,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
                 crearPedido();
             }
 
-            
+
         });
 
         dni.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +102,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
             if (resultCode == RESULT_OK) {
                // String result = data.getStringExtra("Productos");
 
-                List<Referencia> lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
+                lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
                 for (Referencia referencia : lista)
                     Toast.makeText(this, "Selecciona: "  + referencia.getNomref(), Toast.LENGTH_SHORT).show();
 
@@ -111,13 +122,53 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
 
     @Override
-    public void onDialogPositiveClick(ArrayList<Tercero> listaTerce, int posicion) {
-        Toast.makeText(this, "elemento: "+posicion+" Tercero: "+listaTerce.get(posicion).getTercero(), Toast.LENGTH_LONG).show();
-        dni.setText(listaTerce.get(posicion).getDni());
-        telefono.setText(listaTerce.get(posicion).getTelefono());
-        direccion.setText(listaTerce.get(posicion).getDireccion());
+    public void onDialogPositiveClick(ArrayList<Tercero> terceros, int posicion) {
+        listaTerce.addAll(terceros);
+        posFin = posicion;
+        Toast.makeText(this, "elemento: "+posicion+" Tercero: "+terceros.get(posicion).getTercero(), Toast.LENGTH_LONG).show();
+        dni.setText(terceros.get(posicion).getDni());
+        telefono.setText(terceros.get(posicion).getTelefono());
+        direccion.setText(terceros.get(posicion).getDireccion());
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_product, menu);
+        MenuItem itemBuscar = menu.findItem(R.id.item_search);
+
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemBuscar);
+        searchView.setOnQueryTextListener(this);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+
+        switch (item.getItemId()){
+            case R.id.item_ready:
+                generarPedido();
+                Snackbar.make(this.recyclerProdu, "Pedido Creado!", Snackbar.LENGTH_LONG).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void generarPedido() {
+        String pedido = "\n PEDIDO PARA "+listaTerce.get(posFin).getTercero().toString();
+        pedido += "\n ********PRODUCTOS***************";
+        for (Referencia r : lista)
+        pedido += "\n"+ r.getNomref()+"\n Cantidad: "+r.getQuantity();
+        Toast.makeText(this, "Su pedido fué: "+ pedido, Toast.LENGTH_LONG).show();
+
+        Intent intent = new Intent();
+        intent.putExtra("Pedido", listaTerce.get(posFin).getTercero().toString());
+        setResult(RESULT_OK, intent);
+        finish();
+
+    }
+
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
@@ -125,4 +176,13 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     }
 
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
 }

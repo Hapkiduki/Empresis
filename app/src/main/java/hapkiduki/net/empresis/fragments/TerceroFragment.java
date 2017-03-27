@@ -41,6 +41,7 @@ import hapkiduki.net.empresis.clases.Tercero;
 
 public class TerceroFragment extends Fragment implements SearchView.OnQueryTextListener{
 
+    private final String TIPO = "tercero";
 
     private OnFragmentInteractionListener mListener;
     View vista;
@@ -86,17 +87,17 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
                 vista.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.103/empresis/WsJSONConsultaTercero.php";
+            String url = "http://192.168.0.104/empresis/WsJSONConsultaTercero.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Tercero terceros;
-                    /*
-                    * Traemos la lista local de terceros mediante la libreria SUGAR
-                    */
+                    /**
+                     * Traemos la lista local de terceros mediante la libreria SUGAR
+                     */
                     listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
-                    /*
-                    * Eliminamos todos los terceros de la lista local con el metodo de Sugar
+                    /**
+                     * Eliminamos todos los terceros de la lista local con el metodo de Sugar
                      */
                     Tercero.deleteAll(Tercero.class);
                     try {
@@ -130,6 +131,8 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
                         System.out.println(response);
                         Toast.makeText(getContext(), "No se ha podido establecer conexión con el servidor" +
                                 " "+response, Toast.LENGTH_LONG).show();
+
+                        datosLocales();
                     }
                 }
             }, new Response.ErrorListener() {
@@ -139,6 +142,7 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
                     System.out.println();
                     pDialog.hide();
                     Log.d("ERROR: ", error.toString());
+                    datosLocales();
                 }
             });
 
@@ -151,14 +155,20 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
             Toast.makeText(vista.getContext(), "No se pudo sincronizar, Verifique que " +
                     "cuenta con acceso a Internet", Toast.LENGTH_LONG).show();
             pDialog.hide();
-            /*
-             * Traemos la lista de terceros de manera local con sugar y lo
-             * Bindamos al Reciclerview
-             */
-            listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
-            miAdapter=new TerceroAdapter(getContext(),listaTerce);
-            recyclerTerceros.setAdapter(miAdapter);
+
+            datosLocales();
         }
+    }
+
+    private void datosLocales() {
+        /**
+         * Traemos la lista de terceros de manera local con sugar y lo
+         * Bindamos al Reciclerview
+         */
+
+        listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
+        miAdapter=new TerceroAdapter(getContext(),listaTerce);
+        recyclerTerceros.setAdapter(miAdapter);
     }
 
     //Agregamos el Menu o scope

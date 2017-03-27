@@ -113,6 +113,7 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                         System.out.println(response);
                         Toast.makeText(getApplication(), "No se ha podido establecer conexión con el servidor" +
                                 " "+response, Toast.LENGTH_LONG).show();
+                        datosLocales();
                     }
                 }
             }, new Response.ErrorListener() {
@@ -122,6 +123,7 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                     System.out.println();
                     pDialog.hide();
                     Log.d("ERROR: ", error.toString());
+                    datosLocales();
                 }
             });
 
@@ -134,15 +136,29 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
             Toast.makeText(getApplication(), "No se pudo sincronizar, Verifique que " +
                     "cuenta con acceso a Internet", Toast.LENGTH_LONG).show();
             pDialog.hide();
-            /*
+
+            datosLocales();
+            /**
              * Traemos la lista de terceros de manera local con sugar y lo
              * Bindamos al Reciclerview
              */
 
-            listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
+            /*listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
             miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
             recyclerTerceros.setAdapter(miAdapter);
+            */
         }
+    }
+
+    private void datosLocales() {
+        /**
+         * Traemos la lista de terceros de manera local con sugar y lo
+         * Bindamos al Reciclerview
+         */
+
+        listaTerce = (ArrayList<Tercero>) Tercero.listAll(Tercero.class);
+        miAdapter=new TerceroAdapter(getApplicationContext(),listaTerce);
+        recyclerTerceros.setAdapter(miAdapter);
     }
 
     //Agregamos el Menu o scope

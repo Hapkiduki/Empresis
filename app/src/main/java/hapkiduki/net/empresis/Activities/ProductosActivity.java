@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -197,8 +195,11 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                         System.out.println(response);
                         Toast.makeText(getApplication(), "No se ha podido establecer conexión con el servidor" +
                                 " "+response, Toast.LENGTH_LONG).show();
+                        datosLocales();
                     }
                 }
+
+
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
@@ -212,6 +213,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
                     System.out.println();
                     Log.d("ERROR: ", error.toString());
+                    datosLocales();
                 }
             });
 
@@ -230,11 +232,25 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
              * con SUGAR
              */
 
-            listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+            /*listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
             miAdapter=new ReferenciaAdapter(getApplication(),listaRefe);
             recyclerReferencias.setAdapter(miAdapter);
 
+
+*/
+            datosLocales();
         }
+    }
+
+    private void datosLocales() {
+        /**
+         * Cargamos los datos al recicler view de forma local
+         * con SUGAR
+         */
+
+        listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+        miAdapter=new ReferenciaAdapter(getApplication(),listaRefe);
+        recyclerReferencias.setAdapter(miAdapter);
     }
 
     //Agregamos los metodos necesarios para nuestro Scope
