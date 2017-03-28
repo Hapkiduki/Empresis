@@ -9,17 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.widget.Toast;
 
 import hapkiduki.net.empresis.R;
-import hapkiduki.net.empresis.clases.Referencia;
-import hapkiduki.net.empresis.clases.Tercero;
 
 
-public class PedidosFragment extends Fragment {
+public class PedidosFragment extends Fragment{
+
 
 
     private OnFragmentInteractionListener mListener;
@@ -31,7 +27,6 @@ public class PedidosFragment extends Fragment {
     public PedidosFragment() {
 
     }
-
 
     public static PedidosFragment newInstance(String param1, String param2) {
         PedidosFragment fragment = new PedidosFragment();
@@ -57,6 +52,7 @@ public class PedidosFragment extends Fragment {
         return vista;
     }
 
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -80,6 +76,8 @@ public class PedidosFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
 
 
     public interface OnFragmentInteractionListener {
