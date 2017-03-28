@@ -16,23 +16,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.TerceroDialog;
-import hapkiduki.net.empresis.adapters.PedidoAdapter;
+import hapkiduki.net.empresis.adapters.GestionPedidoAdapter;
+import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
 public class PedidosActivity extends AppCompatActivity implements TerceroDialog.TerceroDialogListner, SearchView.OnQueryTextListener{
 
     RecyclerView recyclerProdu;
-   // ArrayList<Referencia> listaTerce;
+    // ArrayList<Referencia> listaTerce;
     List<Tercero> listaTerce;
-    PedidoAdapter miAdapter;
+    GestionPedidoAdapter miAdapter;
     TextView dni, telefono, direccion;
 
     private static final int REQUEST_CODE = 1;
@@ -80,8 +80,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
                 mostrarTerceros();
             }
         });
-
-
     }
 
 
@@ -100,17 +98,19 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
         if (requestCode == REQUEST_CODE){
             if (resultCode == RESULT_OK) {
-               // String result = data.getStringExtra("Productos");
-
+                // String result = data.getStringExtra("Productos");
                 lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
-                for (Referencia referencia : lista)
-                    Toast.makeText(this, "Selecciona: "  + referencia.getNomref(), Toast.LENGTH_SHORT).show();
+                for (Referencia referencia : lista){
+                    // Toast.makeText(this, "Selecciona: "  + referencia.getNomref(), Toast.LENGTH_SHORT).show();
+                    referencia.setPrice(""+Integer.parseInt(referencia.getQuantity()) * Double.parseDouble(referencia.getPrice()));
+                }
 
-                miAdapter = new PedidoAdapter(this, lista);
+
+                miAdapter = new GestionPedidoAdapter(this, lista);
                 recyclerProdu.setAdapter(miAdapter);
 
             }
-}
+        }
     }
 
     private void mostrarTerceros() {
@@ -125,7 +125,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     public void onDialogPositiveClick(ArrayList<Tercero> terceros, int posicion) {
         listaTerce.addAll(terceros);
         posFin = posicion;
-        Toast.makeText(this, "elemento: "+posicion+" Tercero: "+terceros.get(posicion).getTercero(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "elemento: "+posicion+" Tercero: "+terceros.get(posicion).getTercero(), Toast.LENGTH_LONG).show();
         dni.setText(terceros.get(posicion).getDni());
         telefono.setText(terceros.get(posicion).getTelefono());
         direccion.setText(terceros.get(posicion).getDireccion());
@@ -156,14 +156,32 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     }
 
     private void generarPedido() {
-        String pedido = "\n PEDIDO PARA "+listaTerce.get(posFin).getTercero().toString();
+
+       /* String pedido = "\n PEDIDO PARA "+listaTerce.get(posFin).getTercero().toString();
         pedido += "\n ********PRODUCTOS***************";
         for (Referencia r : lista)
-        pedido += "\n"+ r.getNomref()+"\n Cantidad: "+r.getQuantity();
+            pedido += "\n" + r.getNomref() + "\n Cantidad: " + r.getQuantity()+ "\n Precio: "+r.getPrice();
         Toast.makeText(this, "Su pedido fué: "+ pedido, Toast.LENGTH_LONG).show();
 
-        Intent intent = new Intent();
+
         intent.putExtra("Pedido", listaTerce.get(posFin).getTercero().toString());
+*/
+        Intent intent = new Intent();
+        /**
+         * Enviamos los parametros para generar el pedido
+         */
+
+        double costEnd = 0;
+        Pedido mPedido = new Pedido();
+        mPedido.setTercero(listaTerce.get(posFin).getDni().toString());
+        mPedido.setProductos(lista);
+        for (Referencia producto : lista) {
+            costEnd += Double.parseDouble(producto.getQuantity());
+        }
+        mPedido.setCost_total(costEnd);
+
+        intent.putExtra("ObjectPedido", mPedido);
+
         setResult(RESULT_OK, intent);
         finish();
 

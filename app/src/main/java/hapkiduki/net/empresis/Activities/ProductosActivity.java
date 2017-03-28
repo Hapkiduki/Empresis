@@ -171,7 +171,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                             JSONObject jsonArrayChild=json.getJSONObject(i);
                             referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
                             referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
-                            referencias.setPrice(jsonArrayChild.optString("COSTOULTI"));
+                            referencias.setPrice(jsonArrayChild.optString("VR_VENIVA"));
                             referencias.setQuantity("1");
                             referencias.setState(false);
                             listaRefe.add(referencias);
@@ -251,6 +251,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
         miAdapter=new ReferenciaAdapter(getApplication(),listaRefe);
         recyclerReferencias.setAdapter(miAdapter);
+
     }
 
     //Agregamos los metodos necesarios para nuestro Scope

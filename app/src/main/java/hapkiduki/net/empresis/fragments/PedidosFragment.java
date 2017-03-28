@@ -1,37 +1,67 @@
 package hapkiduki.net.empresis.fragments;
 
-import android.content.Context;
+import android.app.ProgressDialog;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import hapkiduki.net.empresis.R;
+import hapkiduki.net.empresis.adapters.PedidoAdapter;
+import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
+import hapkiduki.net.empresis.clases.Pedido;
+import hapkiduki.net.empresis.clases.Referencia;
 
 
-public class PedidosFragment extends Fragment{
+public class PedidosFragment extends Fragment implements SearchView.OnQueryTextListener{
 
-
-
-    private OnFragmentInteractionListener mListener;
-    RecyclerView listaPedidos;
     View vista;
-    ImageView imgSync;
+
+    RecyclerView recyclerPedidos;
+    ArrayList<Pedido> listaPedido;
+    PedidoAdapter miAdapter;
+    LinearLayout contenedor;
 
 
     public PedidosFragment() {
 
     }
 
+
     public static PedidosFragment newInstance(String param1, String param2) {
         PedidosFragment fragment = new PedidosFragment();
         Bundle args = new Bundle();
 
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -39,45 +69,111 @@ public class PedidosFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        vista = inflater.inflate(R.layout.fragment_pedidos, container, false);
-        listaPedidos = (RecyclerView) vista.findViewById(R.id.listaPedidos);
-        imgSync = (ImageView) vista.findViewById(R.id.imgSync);
 
+        vista = inflater.inflate(R.layout.fragment_pedidos, container, false);
+        setHasOptionsMenu(true);
+
+        listaPedido = new ArrayList<Pedido>();
+        recyclerPedidos = (RecyclerView) vista.findViewById(R.id.recycler_pedidos);
+        recyclerPedidos.setLayoutManager(new LinearLayoutManager(vista.getContext()));
+        recyclerPedidos.setHasFixedSize(true);
+        contenedor = (LinearLayout) vista.findViewById(R.id.content_sinc);
+
+        cargarWebService();
+
+        contenedor.setVisibility(listaPedido.size() > 0 ? View.INVISIBLE : View.VISIBLE);
         return vista;
     }
 
+    private void cargarWebService() {
+        List<Referencia> productos = new ArrayList<>();
+        Referencia referencia = new Referencia();
+        referencia.setCodRef("fdffgg");
+        referencia.setQuantity("2");
+        referencia.setPrice("2500");
+        referencia.setNomref("Pera");
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        productos.add(referencia);
+        Pedido pedido = new Pedido("Andrés Felipe Corrales Ortiz", productos, 25250.20);
+        Pedido pedido2 = new Pedido("Julio Palacio", productos, 25250.20);
+        Pedido pedido3 = new Pedido("Johnny Palacio", productos, 25250.20);
+        Pedido pedido4 = new Pedido("Mauricio Castañeda", productos, 25250.20);
+        listaPedido.add(pedido);
+        listaPedido.add(pedido2);
+        listaPedido.add(pedido3);
+        listaPedido.add(pedido4);
+
+
+
+        miAdapter = new PedidoAdapter(vista.getContext(), listaPedido);
+
+        recyclerPedidos.setAdapter(miAdapter);
+        miAdapter.notifyDataSetChanged();
+    }
+
+
+    //Agregamos los metodos necesarios para nuestro Scope
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_pedido,menu);
+        MenuItem itemBuscar = menu.findItem(R.id.item_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemBuscar);
+        searchView.setOnQueryTextListener(this);
+
+        MenuItem itemSync = menu.findItem(R.id.item_sync);
+        itemSync.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public boolean onQueryTextSubmit(String query) {
+        ArrayList<Pedido> consulta = new ArrayList<>();
+        try {
+            double precio = Double.parseDouble(query);
+            for (Pedido pedido : listaPedido){
+                double costo = pedido.getCost_total();
+
+                if (costo == precio){
+                    consulta.add(pedido);
+                }
+            }
+        }catch (NumberFormatException e){
+            String parametro = query;
+            for (Pedido pedido : listaPedido){
+                String cliente = pedido.getTercero();
+
+                if (cliente.contains(query)){
+                    consulta.add(pedido);
+                }
+            }
         }
+        miAdapter.filter(consulta);
+        return true;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public boolean onQueryTextChange(String newText) {
+
+        newText = newText.toLowerCase();
+        ArrayList<Pedido> query = new ArrayList<>();
+
+        for (Pedido pedido : listaPedido){
+            String nomCliente = pedido.getTercero().toLowerCase();
+            double precio = pedido.getCost_total();
+
+            if (nomCliente.contains(newText)){
+                query.add(pedido);
+            }
+        }
+        miAdapter.filter(query);
+        return true;
     }
-
-
 
 
     public interface OnFragmentInteractionListener {

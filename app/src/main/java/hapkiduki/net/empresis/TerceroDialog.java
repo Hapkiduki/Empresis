@@ -74,7 +74,7 @@ public class TerceroDialog extends DialogFragment{
 
 
                 ArrayList lista = new ArrayList();
-                Toast.makeText(getActivity(), "Selecciona el elemento: "+
+                Toast.makeText(getActivity(), "Cliente: "+
                         listaTerce.get(recyclerTerceros.getChildPosition(v)).getTercero(), Toast.LENGTH_SHORT).show();
                 dismiss();
                 listener.onDialogPositiveClick(listaTerce, recyclerTerceros.getChildPosition(v));

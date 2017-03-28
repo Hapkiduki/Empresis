@@ -1,6 +1,5 @@
 package hapkiduki.net.empresis.Activities;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import hapkiduki.net.empresis.R;
+import hapkiduki.net.empresis.clases.Pedido;
+import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.fragments.HomeFragment;
 import hapkiduki.net.empresis.fragments.PedidosFragment;
 import hapkiduki.net.empresis.fragments.ReferenciaFragment;
@@ -92,10 +93,38 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                String result = data.getStringExtra("Pedido");
+                /*String result = data.getStringExtra("Pedido");
                 Toast.makeText(this, "Hola : " + result + " Desde pedidos", Toast.LENGTH_SHORT).show();
+*/
+                Pedido pedido = (Pedido) data.getExtras().getSerializable("ObjectPedido");
+
+
+                double costoFin = 0;
+                String pedidoFinal = "Su pedido fué: \n";
+                pedidoFinal += "Cliente: "+pedido.getTercero();
+                pedidoFinal += "\n ******** Productos *******";
+                for (Referencia referencia : pedido.getProductos()) {
+                    pedidoFinal += "\n Referencia: " + referencia.getNomref();
+                    costoFin = costoFin + Double.parseDouble(referencia.getPrice());
+                }
+                pedidoFinal += "\n EL TOTAL DE SU FACTURA ES: $"+costoFin;
+                Toast.makeText(this, pedidoFinal, Toast.LENGTH_LONG).show();
+                System.out.println(pedidoFinal);
+
+                //Traigo el fragment
+                PedidosFragment fragment1= new PedidosFragment();
+                android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.add(R.id.container, fragment1).commit();
+
+                Bundle datos = new Bundle();
+                datos.putString("dato", "lo que sea");
+                fragment1.setArguments(datos);
+
+
             }
         }
+
+
     }
 
     //////////////////////////////
@@ -165,6 +194,7 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
                     fragment = new PedidosFragment();
                     fragmentTransaction = true;
                     break;
+
             }
 
 
@@ -208,6 +238,7 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
 
         @Override
         public CharSequence getPageTitle(int position) {
+
             switch (position) {
                 case 0:
                     return "Inicio";
@@ -217,6 +248,7 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
                     return "Referencias";
                 case 3:
                     return "Pedidos";
+
 
             }
             return null;

@@ -5,32 +5,28 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import hapkiduki.net.empresis.R;
-import hapkiduki.net.empresis.clases.Referencia;
-import hapkiduki.net.empresis.clases.Tercero;
+import hapkiduki.net.empresis.clases.Pedido;
 
 /**
- * Created by Programa-PC on 08/03/2017.
+ * Created by Programa-PC on 28/03/2017.
  */
 
 public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder>{
 
     private Context context;
-    private List<Referencia> referencias;
+    private List<Pedido> pedidos;
 
 
-    public PedidoAdapter(Context context, List<Referencia> referencias) {
+    public PedidoAdapter(Context context, List<Pedido> pedidos) {
         this.context = context;
-        this.referencias = referencias;
+        this.pedidos = pedidos;
     }
 
     @Override
@@ -41,50 +37,50 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(PedidoAdapter.ViewHolder holder, final int position) {
-        holder.product.setText(referencias.get(position).getNomref());
-        holder.quantity.setText(referencias.get(position).getQuantity());
-        holder.price.setText(referencias.get(position).getPrice());
-        holder.itemView.setTag(referencias.get(position));
+        holder.customer.setText(pedidos.get(position).getTercero());
+        holder.productsQuantity.setText("Productos: "+pedidos.get(position).getProductos().size());
+        holder.finalPrice.setText("$/"+pedidos.get(position).getCost_total());
+        holder.itemView.setTag(pedidos.get(position));
 
         holder.x.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeItem(referencias, position);
+                removeItem(pedidos, position);
             }
         });
 
     }
 
-    private void removeItem(List<Referencia> referencias, int position) {
-        referencias.remove(position);
+    private void removeItem(List<Pedido> pedidos, int position) {
+        pedidos.remove(position);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return referencias.size();
+        return pedidos.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView product;
-        TextView quantity, price;
+        TextView customer;
+        TextView productsQuantity, finalPrice;
         Button x;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            product = (TextView) itemView.findViewById(R.id.tvProduct);
-            quantity = (TextView) itemView.findViewById(R.id.tvQuantity);
-            price =  (TextView) itemView.findViewById(R.id.tvPrice);
+            customer = (TextView) itemView.findViewById(R.id.tvProduct);
+            productsQuantity = (TextView) itemView.findViewById(R.id.tvQuantity);
+            finalPrice =  (TextView) itemView.findViewById(R.id.tvPrice);
             x = (Button) itemView.findViewById(R.id.btnDelete);
         }
     }
 
     //Creamos el filtro o Scope para recorrer nuestro recicler view
-    public void filter(ArrayList<Referencia> query){
-        referencias = new ArrayList<>();
-        referencias.addAll(query);
+    public void filter(ArrayList<Pedido> query){
+        pedidos = new ArrayList<>();
+        pedidos.addAll(query);
         notifyDataSetChanged();
     }
 

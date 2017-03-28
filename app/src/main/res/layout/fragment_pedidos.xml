@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/contenedor_pedidos"
     tools:context="hapkiduki.net.empresis.fragments.HomeFragment">
 
     <TextView
@@ -14,23 +15,19 @@
         android:textAlignment="center"
         android:text="ESTADO DE PEDIDOS"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:id="@+id/listaPedidos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_pedidos"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
-    </android.support.v7.widget.RecyclerView>
-
-    <ImageView
-        android:id="@+id/imgSync"
-        android:layout_width="206dp"
-        android:layout_height="187dp"
-        android:layout_gravity="center"
-        android:src="@mipmap/pedido"/>
 
     <LinearLayout
+        android:id="@+id/content_sinc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -39,6 +36,13 @@
         android:paddingRight="10dp"
         android:paddingBottom="10dp"
         android:layout_gravity="bottom">
+
+        <ImageView
+            android:id="@+id/imgSync"
+            android:layout_width="206dp"
+            android:layout_height="187dp"
+            android:layout_gravity="center"
+            android:src="@mipmap/pedido"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -58,5 +62,6 @@
 
 
     </LinearLayout>
+
 
 </LinearLayout>

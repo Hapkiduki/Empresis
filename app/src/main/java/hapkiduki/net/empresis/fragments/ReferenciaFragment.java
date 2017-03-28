@@ -99,7 +99,7 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                 vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.104/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.0.103/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -120,7 +120,7 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                             JSONObject jsonArrayChild=json.getJSONObject(i);
                             referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
                             referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
-                            referencias.setPrice("COSTOULTI");
+                            referencias.setPrice("VR_VENIVA");
                             referencias.setQuantity("1");
                             referencias.setState(false);
                             listaRefe.add(referencias);
