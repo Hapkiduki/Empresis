@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
     List<Referencia> lista;
     int posFin;
+
 
 
     @Override
@@ -80,6 +82,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
                 mostrarTerceros();
             }
         });
+
     }
 
 
@@ -174,18 +177,26 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         double costEnd = 0;
         Pedido mPedido = new Pedido();
         mPedido.setTercero(listaTerce.get(posFin).getDni().toString());
-        mPedido.setProductos(lista);
+        mPedido.setProducto(lista);
         for (Referencia producto : lista) {
-            costEnd += Double.parseDouble(producto.getQuantity());
+
+            costEnd += Double.parseDouble(producto.getPrice());
+
+
         }
         mPedido.setCost_total(costEnd);
 
-        intent.putExtra("ObjectPedido", mPedido);
+        mPedido.save();
+
+
+       /* intent.putExtra("ObjectPedido", mPedido);
 
         setResult(RESULT_OK, intent);
+*/
         finish();
 
     }
+
 
 
     @Override

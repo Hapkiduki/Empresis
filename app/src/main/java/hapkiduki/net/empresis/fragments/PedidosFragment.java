@@ -1,16 +1,13 @@
 package hapkiduki.net.empresis.fragments;
 
-import android.app.ProgressDialog;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,18 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +77,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
     }
 
     private void cargarWebService() {
-        List<Referencia> productos = new ArrayList<>();
+        /*List<Referencia> productos = new ArrayList<>();
         Referencia referencia = new Referencia();
         referencia.setCodRef("fdffgg");
         referencia.setQuantity("2");
@@ -115,6 +100,20 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
 
         recyclerPedidos.setAdapter(miAdapter);
         miAdapter.notifyDataSetChanged();
+        */
+
+        listaPedido = (ArrayList<Pedido>) Pedido.listAll(Pedido.class);
+        /*miAdapter = new PedidoAdapter(vista.getContext(), listaPedido);
+        recyclerPedidos.setAdapter(miAdapter);*/
+
+        String pedido = "Pedidos";
+        for (Pedido p : listaPedido){
+            pedido += "\n Cliente: "+ p.getTercero();
+            pedido += "\n Costo Total del pedido: "+p.getCost_total();
+                Toast.makeText(vista.getContext(), "esto es un msg"+(p.getProducto().size() > 0 ? "BN": "Mal"), Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(vista.getContext(), pedido , Toast.LENGTH_LONG).show();
+
     }
 
 
@@ -174,7 +173,6 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         miAdapter.filter(query);
         return true;
     }
-
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name

@@ -38,7 +38,7 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder
     @Override
     public void onBindViewHolder(PedidoAdapter.ViewHolder holder, final int position) {
         holder.customer.setText(pedidos.get(position).getTercero());
-        holder.productsQuantity.setText("Productos: "+pedidos.get(position).getProductos().size());
+        //holder.productsQuantity.setText("Productos: "+pedidos.get(position).getProducto());
         holder.finalPrice.setText("$/"+pedidos.get(position).getCost_total());
         holder.itemView.setTag(pedidos.get(position));
 

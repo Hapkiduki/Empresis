@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.Referencia;
@@ -45,6 +44,7 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,14 +88,14 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                /*String result = data.getStringExtra("Pedido");
+                *//*String result = data.getStringExtra("Pedido");
                 Toast.makeText(this, "Hola : " + result + " Desde pedidos", Toast.LENGTH_SHORT).show();
-*/
+*//*
                 Pedido pedido = (Pedido) data.getExtras().getSerializable("ObjectPedido");
 
 
@@ -120,13 +120,12 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
                 datos.putString("dato", "lo que sea");
                 fragment1.setArguments(datos);
 
-
             }
         }
 
 
     }
-
+*/
     //////////////////////////////
 
     @Override
@@ -155,6 +154,7 @@ public class EmpresisActivity extends AppCompatActivity implements HomeFragment.
     public void onFragmentInteraction(Uri uri) {
 
     }
+
 
     /**
      * A placeholder fragment containing a simple view.

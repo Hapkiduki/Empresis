@@ -3,6 +3,7 @@ package hapkiduki.net.empresis.clases;
 import com.orm.SugarRecord;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by Programa-PC on 28/02/2017.
@@ -15,6 +16,7 @@ public class Referencia extends SugarRecord implements Serializable{
     private String quantity;
     private Boolean state;
 
+
     public Referencia() {
     }
 
@@ -25,6 +27,7 @@ public class Referencia extends SugarRecord implements Serializable{
         this.quantity = quantity;
         this.state = state;
     }
+
 
     public String getQuantity() {
         return quantity;
@@ -61,4 +64,5 @@ public class Referencia extends SugarRecord implements Serializable{
     public void setState(Boolean state) {
         this.state = state;
     }
+
 }
