@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,22 +28,23 @@ import hapkiduki.net.empresis.clases.Referencia;
 
 public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.ViewHolder> {
 
-
     private Context context;
     private List<Referencia> referencias;
     private SparseBooleanArray mSelectedItemsIds;
+
 
 
     public ReferenciaAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
         this.referencias = referencias;
         mSelectedItemsIds = new SparseBooleanArray();
+
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list, parent, false);
-
         return new ViewHolder(itemView);
     }
 
@@ -130,8 +134,5 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public int getItemViewType(int position) {
         return position;
     }
-
-
-
 
 }

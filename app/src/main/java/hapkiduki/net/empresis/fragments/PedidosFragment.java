@@ -106,14 +106,14 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         /*miAdapter = new PedidoAdapter(vista.getContext(), listaPedido);
         recyclerPedidos.setAdapter(miAdapter);*/
 
-        String pedido = "Pedidos";
+       /* String pedido = "Pedidos";
         for (Pedido p : listaPedido){
             pedido += "\n Cliente: "+ p.getTercero();
             pedido += "\n Costo Total del pedido: "+p.getCost_total();
                 Toast.makeText(vista.getContext(), "esto es un msg"+(p.getProducto().size() > 0 ? "BN": "Mal"), Toast.LENGTH_SHORT).show();
         }
         Toast.makeText(vista.getContext(), pedido , Toast.LENGTH_LONG).show();
-
+*/
     }
 
 

@@ -42,6 +42,10 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
     JsonObjectRequest jsonObjectRequest;
     TerceroAdapter miAdapter;
 
+
+    //ConectionService con;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +62,9 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
 
     }
 
-   private void cargarWebServiceImagenes() {
+
+
+    private void cargarWebServiceImagenes() {
         pDialog=new ProgressDialog(this);
         pDialog.setMessage("Cargando Terceros...");
         pDialog.show();

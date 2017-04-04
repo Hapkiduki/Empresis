@@ -87,7 +87,8 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
                 vista.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.104/empresis/WsJSONConsultaTercero.php";
+            //String url = "http://192.168.0.104/empresis/WsJSONConsultaTercero.php";http://10.0.2.2:81
+            String url = "http://10.0.2.2:81/empresis/WsJSONConsultaTercero.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

@@ -99,7 +99,7 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                 vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.103/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
