@@ -99,7 +99,8 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                 vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
+            //String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.0.103:81/Empresis/conexion.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -113,14 +114,21 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                     Referencia.deleteAll(Referencia.class);
                     try {
 
-                        JSONArray json=response.optJSONArray("fp_refer");
+                       /* JSONArray json=response.optJSONArray("fp_refer");
 
                         for (int i=0; i<json.length();i++){
                             referencias=new Referencia();
                             JSONObject jsonArrayChild=json.getJSONObject(i);
                             referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
-                            referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
-                            referencias.setPrice("VR_VENIVA");
+                            referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));*/
+                        JSONArray json=response.optJSONArray("Product");
+
+                        for (int i=0; i<json.length();i++){
+                            referencias=new Referencia();
+                            JSONObject jsonArrayChild=json.getJSONObject(i);
+                            referencias.setNomref(jsonArrayChild.optString("CodRef"));
+                            referencias.setCodRef(jsonArrayChild.optString("NameRef"));
+                            referencias.setPrice(jsonArrayChild.optString("Vr_Veniva"));
                             referencias.setQuantity("1");
                             referencias.setState(false);
                             listaRefe.add(referencias);

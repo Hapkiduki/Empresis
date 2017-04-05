@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,14 +38,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.clases.RecyclerClick;
 import hapkiduki.net.empresis.clases.RecyclerTouch;
 import hapkiduki.net.empresis.clases.Referencia;
 
-public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener{
+public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaRefe;
@@ -58,7 +55,6 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     ReferenciaAdapter miAdapter;
     List<Integer> listaPosiciones;
 
-    //Intent intent;
     int quantity;
 
     SwipeRefreshLayout swipeRefreshLayout;
@@ -79,7 +75,6 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         recyclerReferencias.setLayoutManager(layoutManager);
         recyclerReferencias.setHasFixedSize(true);
 
-
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
         swipeRefreshLayout.setOnRefreshListener(this);
 
@@ -87,16 +82,11 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
         request = Volley.newRequestQueue(this);
+
         cargarWebService();
         implementarInterfaz();
-
-
     }
-
 
 
     @Override
@@ -166,7 +156,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.102:81/Empresis/conexion.php";
+            String url = "http://192.168.1.66:81/Empresis/conexion.php";
             //String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
@@ -177,19 +167,15 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                      * Traemos la lista local de referencias mediante la librería Sugar
                      * y los eliminamos
                      */
-                    listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
-                    Referencia.deleteAll(Referencia.class);
+                    //listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+                    //Referencia.deleteAll(Referencia.class);
                     try {
 
-                        //JSONArray json=response.optJSONArray("fp_refer");
                         JSONArray json=response.optJSONArray("Product");
 
                         for (int i=0; i<json.length();i++){
                             referencias=new Referencia();
                             JSONObject jsonArrayChild=json.getJSONObject(i);
-                           /* referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
-                            referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
-                            referencias.setPrice("VR_VENIVA");*/
                             referencias.setNomref(jsonArrayChild.optString("CodRef"));
                             referencias.setCodRef(jsonArrayChild.optString("NameRef"));
                             referencias.setPrice(jsonArrayChild.optString("Vr_Veniva"));
@@ -203,10 +189,11 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                         }
                         pDialog.dismiss();
                         miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
+
                         recyclerReferencias.setAdapter(miAdapter);
+                        swipeRefreshLayout.setRefreshing(false);
 
                     } catch (JSONException e) {
-
                         System.out.println();
                         e.printStackTrace();
                         pDialog.hide();
@@ -214,6 +201,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                         Toast.makeText(getApplicationContext(), "No se ha podido establecer conexión con el servidor" +
                                 " "+response, Toast.LENGTH_LONG).show();
                         datosLocales();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }
             }, new Response.ErrorListener() {
@@ -228,6 +216,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                     }
 
                     datosLocales();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             });
 
@@ -245,6 +234,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
             listaRefe= (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
 
             datosLocales();
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -328,7 +318,6 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
         cargarWebService();
     }
-
 
 }
 

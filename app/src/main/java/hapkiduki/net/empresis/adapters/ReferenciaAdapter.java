@@ -1,20 +1,14 @@
 package hapkiduki.net.empresis.adapters;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +35,10 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
     }
 
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list, parent, false);
+
         return new ViewHolder(itemView);
     }
 
@@ -53,12 +47,8 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
         holder.nombre.setText(referencias.get(position).getNomref());
         holder.id.setText(referencias.get(position).getCodRef());
-
         holder.itemView.setTag(referencias.get(position));
-
         holder.itemView.setBackgroundColor(mSelectedItemsIds.get(position) ? 0x9934B5E4 : Color.TRANSPARENT);
-
-
     }
 
 
@@ -95,7 +85,10 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return referencias.size();
+        if (referencias != null)
+            return referencias.size();
+        return 0;
+        /*return referencias.size();*/
     }
 
 
@@ -118,6 +111,20 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
     }
 
+//Metodo de prueba
+    private static class FooterViewHolder extends RecyclerView.ViewHolder {
+        public ProgressBar getProgressBar() {
+            return progressBar;
+        }
+
+        private ProgressBar progressBar;
+
+        public FooterViewHolder(View itemView) {
+            super(itemView);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.footer);
+        }
+    }
+
     /** Creamos el filtro o Scope para recorrer nuestro recicler view */
     public void filter(ArrayList<Referencia> query){
         referencias = new ArrayList<>();
@@ -134,5 +141,7 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     public int getItemViewType(int position) {
         return position;
     }
+
+
 
 }

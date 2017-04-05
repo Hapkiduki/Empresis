@@ -88,7 +88,7 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             //String url = "http://192.168.0.104/empresis/WsJSONConsultaTercero.php";http://10.0.2.2:81
-            String url = "http://10.0.2.2:81/empresis/WsJSONConsultaTercero.php";
+            String url = "http://192.168.1.66:81/empresis/WsJSONConsultaTercero.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -103,15 +103,15 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
                     Tercero.deleteAll(Tercero.class);
                     try {
 
-                        JSONArray json=response.optJSONArray("fp_terce");
+                        JSONArray json=response.optJSONArray("Customer");
 
                         for (int i=0; i<json.length();i++){
                             terceros = new Tercero();
                             JSONObject jsonArrayChild=json.getJSONObject(i);
-                            terceros.setDni(jsonArrayChild.optString("CODIGOCLI"));
-                            terceros.setDireccion(jsonArrayChild.optString("DIRECCION"));
-                            terceros.setTercero(jsonArrayChild.optString("NOMBRECLI"));
-                            terceros.setTelefono(jsonArrayChild.optString("TELEFONO"));
+                            terceros.setDni(jsonArrayChild.optString("CodigoCli"));
+                            terceros.setDireccion(jsonArrayChild.optString("Direccion"));
+                            terceros.setTercero(jsonArrayChild.optString("NombreCli"));
+                            terceros.setTelefono(jsonArrayChild.optString("Telefono"));
                             listaTerce.add(terceros);
                             //System.out.println(referencias.getNomref().toString());
 
@@ -182,10 +182,6 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemBuscar);
         searchView.setOnQueryTextListener(this);
     }
-
-
-
-
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

@@ -3,8 +3,6 @@ package hapkiduki.net.empresis.clases;
 import com.orm.SugarRecord;
 
 import java.io.Serializable;
-import java.sql.Ref;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
