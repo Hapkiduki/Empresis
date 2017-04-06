@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,40 +158,29 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     }
 
     private void generarPedido() {
+        //intent.putExtra("Pedido", listaTerce.get(posFin).getTercero().toString());
 
-       /* String pedido = "\n PEDIDO PARA "+listaTerce.get(posFin).getTercero().toString();
-        pedido += "\n ********PRODUCTOS***************";
-        for (Referencia r : lista)
-            pedido += "\n" + r.getNomref() + "\n Cantidad: " + r.getQuantity()+ "\n Precio: "+r.getPrice();
-        Toast.makeText(this, "Su pedido fué: "+ pedido, Toast.LENGTH_LONG).show();
-
-
-        intent.putExtra("Pedido", listaTerce.get(posFin).getTercero().toString());
-*/
-        Intent intent = new Intent();
-        /**
-         * Enviamos los parametros para generar el pedido
-         */
-
+//        Intent intent = new Intent();
         double costEnd = 0;
-        Pedido mPedido = new Pedido();
-        mPedido.setTercero(listaTerce.get(posFin).getDni().toString());
-        mPedido.setProducto(lista);
-        for (Referencia producto : lista) {
-
-            costEnd += Double.parseDouble(producto.getPrice());
-
-
-        }
-        mPedido.setCost_total(costEnd);
-
-        mPedido.save();
-
 
        /* intent.putExtra("ObjectPedido", mPedido);
 
         setResult(RESULT_OK, intent);
 */
+        for (Referencia producto : lista) {
+            costEnd += Double.parseDouble(producto.getPrice());
+        }
+        try {
+
+            Pedido pedido = new Pedido(listaTerce.get(posFin), costEnd);
+            pedido.save();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Ocurrió un error de almacenamiento en: "+e.getMessage());
+        }
+
+
         finish();
 
     }

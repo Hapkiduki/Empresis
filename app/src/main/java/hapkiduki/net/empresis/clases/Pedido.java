@@ -3,6 +3,8 @@ package hapkiduki.net.empresis.clases;
 import com.orm.SugarRecord;
 
 import java.io.Serializable;
+import java.sql.Ref;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,42 +13,39 @@ import java.util.List;
 
 public class Pedido extends SugarRecord implements Serializable {
 
-    private String tercero;
-    private double cost_total;
-    private List<Referencia> productos;
+    private Tercero tercero;
+
+    private double precioTotal;
 
     public Pedido() {
     }
 
-    public Pedido(String tercero, double cost_total, List<Referencia> producto) {
+    public Pedido(Tercero tercero, double precioTotal) {
+
         this.tercero = tercero;
-        this.cost_total = cost_total;
-        this.productos = producto;
+        this.precioTotal = precioTotal;
     }
 
-    public List<Referencia> getProducto() {
 
-        return productos;
-    }
 
-    public void setProducto(List<Referencia> producto) {
-        this.productos = producto;
-    }
-
-    public String getTercero() {
+    public Tercero getTercero() {
         return tercero;
     }
 
-    public void setTercero(String tercero) {
+
+    public void setTercero(Tercero tercero) {
         this.tercero = tercero;
     }
 
-    public double getCost_total() {
-        return cost_total;
+    public double getPrecioTotal() {
+        return precioTotal;
     }
 
-    public void setCost_total(double cost_total) {
-        this.cost_total = cost_total;
+    public void setPrecioTotal(double precioTotal) {
+        this.precioTotal = precioTotal;
     }
+
+
 
 }
+

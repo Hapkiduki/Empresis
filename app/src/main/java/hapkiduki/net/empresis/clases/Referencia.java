@@ -3,6 +3,7 @@ package hapkiduki.net.empresis.clases;
 import com.orm.SugarRecord;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,5 +65,10 @@ public class Referencia extends SugarRecord implements Serializable{
     public void setState(Boolean state) {
         this.state = state;
     }
+
+    /**
+     * Relaciones de datos
+     */
+
 
 }
