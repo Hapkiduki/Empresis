@@ -2,11 +2,14 @@ package hapkiduki.net.empresis;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import hapkiduki.net.empresis.Activities.EmpresisActivity;
-import hapkiduki.net.empresis.Activities.ProductosActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,22 +17,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        startAnimation();
+       /* new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(MainActivity.this, EmpresisActivity.class);
+                startActivity(intent);
+            }
+        }, 4000);*/
     }
 
-    public void onClick(View view) {
-        Intent intent = null;
-        switch (view.getId()){
-            case R.id.btnRefe:
-                intent = new Intent(MainActivity.this, ProductosActivity.class);
-                break;
+    private void startAnimation() {
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        anim.reset();
+        RelativeLayout l= (RelativeLayout) findViewById(R.id.activity_main);
+        l.clearAnimation();l.startAnimation(anim);
 
-            case R.id.btnTerce:
-                intent = new Intent(MainActivity.this, TerceroActivity.class);
-                break;
-            case R.id.btnPer:
-                intent = new Intent(MainActivity.this, EmpresisActivity.class);
-                break;
-        }
-        startActivity(intent);
+        anim = AnimationUtils.loadAnimation(this, R.anim.translate);
+        anim.reset();
+        ImageView iv = (ImageView) findViewById(R.id.splash);
+        iv.clearAnimation();
+        iv.startAnimation(anim);
+
+         new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                Intent intent = new Intent(MainActivity.this, EmpresisActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                MainActivity.this.finish();
+            }
+        }, 4500);
+
     }
 }
