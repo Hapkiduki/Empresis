@@ -45,7 +45,12 @@ public class Pedido extends SugarRecord implements Serializable {
         this.precioTotal = precioTotal;
     }
 
-
-
+    public List<Referencia> getProducts() {
+        List<Referencia> result = new ArrayList<>();
+        for (PedidoReferencia pedidoReferencia : PedidoReferencia.find(PedidoReferencia.class, "pedido = ?", getId().toString())){
+            result.add(pedidoReferencia.getReferencia());
+        }
+        return result;
+    }
 }
 

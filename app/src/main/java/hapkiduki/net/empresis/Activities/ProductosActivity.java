@@ -94,12 +94,13 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
         if (item.getItemId() == android.R.id.home) {
             List<Referencia> items = new ArrayList<>();
-
             for (int posicion : listaPosiciones){
                 items.add(listaRefe.get(posicion));
             }
+
             Intent intent = new Intent();
             intent.putExtra("Productos", (Serializable) items);
+            intent.putIntegerArrayListExtra("posicion", (ArrayList<Integer>) (listaPosiciones.size() > 0 ? listaPosiciones : 0));
             setResult(RESULT_OK, intent);
             finish();
             super.onBackPressed();
@@ -156,7 +157,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.103:81/Empresis/conexion.php";
+            String url = "http://192.168.0.104:81/Empresis/conexion.php";
             //String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
@@ -176,8 +177,8 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                         for (int i=0; i<json.length();i++){
                             referencias=new Referencia();
                             JSONObject jsonArrayChild=json.getJSONObject(i);
-                            referencias.setNomref(jsonArrayChild.optString("CodRef"));
-                            referencias.setCodRef(jsonArrayChild.optString("NameRef"));
+                            referencias.setNomref(jsonArrayChild.optString("NameRef"));
+                            referencias.setCodRef(jsonArrayChild.optString("CodRef"));
                             referencias.setPrice(jsonArrayChild.optString("Vr_Veniva"));
                             referencias.setQuantity("1");
                             referencias.setState(false);

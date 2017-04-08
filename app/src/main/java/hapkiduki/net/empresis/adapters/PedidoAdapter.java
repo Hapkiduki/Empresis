@@ -40,7 +40,7 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder
     @Override
     public void onBindViewHolder(PedidoAdapter.ViewHolder holder, final int position) {
         holder.customer.setText(pedidos.get(position).getTercero().getTercero());
-        holder.productsQuantity.setText("Productos: 3");
+        holder.productsQuantity.setText(String.format("Productos: %1$d", pedidos.get(position).getProducts().size()));
         holder.finalPrice.setText(DecimalFormat.getCurrencyInstance(Locale.US).format(pedidos.get(position).getPrecioTotal()));
         holder.itemView.setTag(pedidos.get(position));
 

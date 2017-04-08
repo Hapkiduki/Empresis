@@ -24,6 +24,7 @@ import java.util.Locale;
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.PedidoAdapter;
 import hapkiduki.net.empresis.clases.Pedido;
+import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
 
@@ -71,22 +72,27 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         contenedor = (LinearLayout) vista.findViewById(R.id.content_sinc);
 
         cargarWebService();
-
         contenedor.setVisibility(pedidos.size() > 0 ? View.INVISIBLE : View.VISIBLE);
+
         return vista;
     }
 
     private void cargarWebService() {
-        Tercero t = new Tercero();
+
         String pedido = "Pedido ";
         pedidos = Pedido.listAll(Pedido.class, "id");
         miAdapter=new PedidoAdapter(getContext(),pedidos);
         recyclerPedidos.setAdapter(miAdapter);
-        pedido += "Registros: "+pedidos != null ? pedidos.size() : 0;
+        miAdapter.notifyDataSetChanged();
+        pedido += "Registros: "+pedidos != null && pedidos.size() > 0 ? pedidos.size() : 0;
+
 
         for (Pedido p : pedidos){
             try {
                 pedido += " Cliente: " +p.getTercero().getTercero();
+                pedido += " Productos: "+p.getProducts().size();
+                for (Referencia r : p.getProducts())
+                    pedido += r.getNomref();
             }catch (Exception e){
                 pedido += " Error: "+e.getMessage();
             }
@@ -108,6 +114,15 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         searchView.setOnQueryTextListener(this);
 
         MenuItem itemSync = menu.findItem(R.id.item_sync);
+        itemSync.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Pedido.deleteAll(Pedido.class);
+                cargarWebService();
+                contenedor.setVisibility(pedidos.size() > 0 ? View.INVISIBLE : View.VISIBLE);
+                return true;
+            }
+        });
         itemSync.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
     }
 

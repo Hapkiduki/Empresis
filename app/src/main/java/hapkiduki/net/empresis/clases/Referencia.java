@@ -69,6 +69,12 @@ public class Referencia extends SugarRecord implements Serializable{
     /**
      * Relaciones de datos
      */
-
+    public List<Pedido> getPedidos() {
+        List<Pedido> result = new ArrayList<>();
+        for (PedidoReferencia pedidoReferencia : PedidoReferencia.find(PedidoReferencia.class, "referencia = ?", getId().toString())){
+            result.add(pedidoReferencia.getPedido());
+        }
+        return result;
+    }
 
 }
