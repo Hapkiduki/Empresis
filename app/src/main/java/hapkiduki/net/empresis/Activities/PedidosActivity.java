@@ -18,6 +18,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orm.SugarApp;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,9 +107,13 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
             if (resultCode == RESULT_OK) {
                 // String result = data.getStringExtra("Productos");
                 lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
+
                 for (Referencia referencia : lista){
 
-                    referencia.setPrice(""+Integer.parseInt(referencia.getQuantity()) * Double.parseDouble(referencia.getPrice()));
+                    referencia.setPrice(""+Integer.parseInt(referencia.getCantPed()) * Double.parseDouble(referencia.getPrice()));
+                    List<Referencia> notes = Referencia.findWithQuery(Referencia.class, "Select * from referencia where cod_ref = ?", referencia.getCodRef());
+                    notes.get(0).setCantPed(referencia.getCantPed());
+                    notes.get(0).save();
                 }
                 try {
                     int cantidad = Integer.parseInt(String.valueOf(data.getExtras().getIntegerArrayList("posicion").size()));
@@ -117,10 +123,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
                 }catch (Exception e){
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
                 }
-
-
-
-
 
                 miAdapter = new GestionPedidoAdapter(this, lista);
                 recyclerProdu.setAdapter(miAdapter);
@@ -179,11 +181,13 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
         for (Pedido p : pedidos){
             try {
+                String cantPed = "0";
                 pedido += " Cliente: " +p.getTercero().getTercero();
                 pedido += " Productos: "+p.getProducts().size();
                 for (Referencia r : p.getProducts()){
+                    cantPed = r.getCantPed();
                     pedido += " Producto: "+r.getNomref();
-                    pedido += " Cantidad: "+r.getQuantity();
+                    pedido += " Cantidad: "+ cantPed;
                 }
             }catch (Exception e){
                 pedido += " Error: "+e.getMessage();

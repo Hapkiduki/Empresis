@@ -4,12 +4,11 @@
     android:layout_height="match_parent"
     tools:context="hapkiduki.net.empresis.fragments.HomeFragment">
 
-
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+   <TextView
+       android:layout_marginTop="16dp"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:text="BIENVENIDO A EMPRESIS \n Software contable para la empresa"
+       android:textAlignment="center"/>
 
 </FrameLayout>

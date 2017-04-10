@@ -73,7 +73,7 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.1.66:81/empresis/WsJSONConsultaTercero.php";
+            String url = "http://192.168.0.103:81/empresis/WsJSONConsultaTercero.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

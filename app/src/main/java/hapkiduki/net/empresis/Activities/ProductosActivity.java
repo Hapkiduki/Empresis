@@ -98,6 +98,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                 items.add(listaRefe.get(posicion));
             }
 
+
             Intent intent = new Intent();
             intent.putExtra("Productos", (Serializable) items);
             intent.putIntegerArrayListExtra("posicion", (ArrayList<Integer>) (listaPosiciones.size() > 0 ? listaPosiciones : 0));
@@ -157,7 +158,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.104:81/Empresis/conexion.php";
+            String url = "http://192.168.0.103:81/Empresis/conexion.php";
             //String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
@@ -181,7 +182,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                             referencias.setCodRef(jsonArrayChild.optString("CodRef"));
                             referencias.setPrice(jsonArrayChild.optString("Vr_Veniva"));
                             referencias.setQuantity("1");
-                            referencias.setState(false);
+                            referencias.setCantPed("1");
                             listaRefe.add(referencias);
                             /**
                              * Guardamos la lista de referencias de manera local con sugar
@@ -228,8 +229,6 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
             request.add(jsonObjectRequest);
         } else {
             Toast.makeText(getApplicationContext(), "No se pudo sincronizar, Verifique que cuenta con acceso a Internet", Toast.LENGTH_SHORT).show();
-
-
 
             pDialog.dismiss();
             listaRefe= (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
@@ -289,7 +288,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     //Dialog para escojer la cantidad
     private void numberPickerDialog(final int position){
 
-        final Referencia referencia = new Referencia();
+        //final Referencia referencia = new Referencia();
         NumberPicker numberPicker = new NumberPicker(this);
         numberPicker.setMaxValue(100);
         numberPicker.setMinValue(1);
@@ -297,12 +296,14 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 quantity = newVal;
-                listaRefe.get(position).setQuantity(""+quantity);
+                //listaRefe.get(position).setQuantity(""+quantity);
+                listaRefe.get(position).setCantPed(""+quantity);
             }
         };
 
         numberPicker.setOnValueChangedListener(changeListener);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this).setView(numberPicker).setIcon(R.mipmap.ic_launcher);
+        dialog.setInverseBackgroundForced(true);
         dialog.setTitle("Cantidad de producto").setMessage("Seleccione la cantidad de producto a agregar entre 1 a 100");
         dialog.setPositiveButton("Seleccionar", new DialogInterface.OnClickListener() {
             @Override

@@ -39,9 +39,15 @@ public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(PedidoAdapter.ViewHolder holder, final int position) {
-        holder.customer.setText(pedidos.get(position).getTercero().getTercero());
-        holder.productsQuantity.setText(String.format("Productos: %1$d", pedidos.get(position).getProducts().size()));
-        holder.finalPrice.setText(DecimalFormat.getCurrencyInstance(Locale.US).format(pedidos.get(position).getPrecioTotal()));
+        String tercero = "Desconocido";
+        String productos = "0";
+        String precio = "0.00";
+        tercero = pedidos.get(position).getTercero().getTercero();
+        productos = String.format("Productos: %1$d", pedidos.get(position).getProducts().size());
+        precio = DecimalFormat.getCurrencyInstance(Locale.US).format(pedidos.get(position).getPrecioTotal());
+        holder.customer.setText(tercero != null ? tercero : "Desconocido");
+        holder.productsQuantity.setText(productos != null ? productos : "0");
+        holder.finalPrice.setText(precio != null ? precio : "0.00");
         holder.itemView.setTag(pedidos.get(position));
 
         holder.x.setOnClickListener(new View.OnClickListener() {

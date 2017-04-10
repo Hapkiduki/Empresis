@@ -1,12 +1,18 @@
 package hapkiduki.net.empresis.fragments;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +22,24 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +47,7 @@ import java.util.Locale;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.PedidoAdapter;
+import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
@@ -35,8 +60,11 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
     RecyclerView recyclerPedidos;
     List<Pedido> pedidos;
     PedidoAdapter miAdapter;
-    LinearLayout contenedor;
-
+    LinearLayout contenedor
+            ;
+    ProgressDialog pDialog;
+    RequestQueue request;
+    JsonObjectRequest jsonObjectRequest;
 
     public PedidosFragment() {
 
@@ -86,13 +114,14 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         miAdapter.notifyDataSetChanged();
         pedido += "Registros: "+pedidos != null && pedidos.size() > 0 ? pedidos.size() : 0;
 
-
         for (Pedido p : pedidos){
             try {
-                pedido += " Cliente: " +p.getTercero().getTercero();
+              /*  pedido += " Cliente: " +p.getTercero().getTercero();
                 pedido += " Productos: "+p.getProducts().size();
-                for (Referencia r : p.getProducts())
+                for (Referencia r : p.getProducts()) {
                     pedido += r.getNomref();
+                    pedido += " Cantidad: "+r.getCantPed();
+                }*/
             }catch (Exception e){
                 pedido += " Error: "+e.getMessage();
             }
@@ -102,6 +131,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         Toast.makeText(vista.getContext(), pedido , Toast.LENGTH_LONG).show();
 
     }
+
 
 
     //Agregamos los metodos necesarios para nuestro Scope
@@ -117,6 +147,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         itemSync.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                sincronizarPedidos();
                 Pedido.deleteAll(Pedido.class);
                 cargarWebService();
                 contenedor.setVisibility(pedidos.size() > 0 ? View.INVISIBLE : View.VISIBLE);
@@ -124,6 +155,10 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
             }
         });
         itemSync.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
+    }
+
+    private void sincronizarPedidos() {
+       
     }
 
     @Override
