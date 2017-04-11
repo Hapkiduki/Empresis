@@ -2,6 +2,8 @@ package hapkiduki.net.empresis.clases;
 
 import com.orm.SugarRecord;
 
+import java.util.List;
+
 /**
  * Created by Programa-PC on 01/03/2017.
  */
@@ -9,6 +11,8 @@ import com.orm.SugarRecord;
 public class Tercero extends SugarRecord{
 
     private String tercero, direccion, telefono, dni;
+
+
 
     public Tercero() {
     }
@@ -51,4 +55,9 @@ public class Tercero extends SugarRecord{
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
+
+    public List<Pedido> getCliente() {
+        return Pedido.find(Pedido.class, "tercero = ?", new String[]{String.valueOf(getId())});
+    }
+
 }

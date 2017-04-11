@@ -38,7 +38,7 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
     @Override
     public void onBindViewHolder(GestionPedidoAdapter.ViewHolder holder, final int position) {
         holder.product.setText(referencias.get(position).getNomref());
-        holder.quantity.setText(referencias.get(position).getQuantity());
+        holder.quantity.setText(referencias.get(position).getCantPed());
         holder.price.setText("$/"+referencias.get(position).getPrice());
         holder.itemView.setTag(referencias.get(position));
 

@@ -18,20 +18,25 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.orm.SugarApp;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.TerceroDialog;
 import hapkiduki.net.empresis.adapters.GestionPedidoAdapter;
+import hapkiduki.net.empresis.adapters.PedidoAdapter;
 import hapkiduki.net.empresis.clases.Pedido;
+import hapkiduki.net.empresis.clases.PedidoReferencia;
 import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
 public class PedidosActivity extends AppCompatActivity implements TerceroDialog.TerceroDialogListner, SearchView.OnQueryTextListener{
 
     RecyclerView recyclerProdu;
-    // ArrayList<Referencia> listaTerce;
     List<Tercero> listaTerce;
     GestionPedidoAdapter miAdapter;
     TextView dni, telefono, direccion;
@@ -40,6 +45,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
     List<Referencia> lista;
     int posFin;
+    int[] posPro;
 
 
 
@@ -90,8 +96,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
     private void crearPedido() {
         Intent intent = new Intent(PedidosActivity.this, ProductosActivity.class);
         startActivityForResult(intent,REQUEST_CODE);
-
-
     }
 
     @Override
@@ -103,11 +107,22 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
             if (resultCode == RESULT_OK) {
                 // String result = data.getStringExtra("Productos");
                 lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
-                for (Referencia referencia : lista){
-                    // Toast.makeText(this, "Selecciona: "  + referencia.getNomref(), Toast.LENGTH_SHORT).show();
-                    referencia.setPrice(""+Integer.parseInt(referencia.getQuantity()) * Double.parseDouble(referencia.getPrice()));
-                }
 
+                for (Referencia referencia : lista){
+
+                    referencia.setPrice(""+Integer.parseInt(referencia.getCantPed()) * Double.parseDouble(referencia.getPrice()));
+                    List<Referencia> notes = Referencia.findWithQuery(Referencia.class, "Select * from referencia where cod_ref = ?", referencia.getCodRef());
+                    notes.get(0).setCantPed(referencia.getCantPed());
+                    notes.get(0).save();
+                }
+                try {
+                    int cantidad = Integer.parseInt(String.valueOf(data.getExtras().getIntegerArrayList("posicion").size()));
+                    posPro = new int[cantidad];
+                    for (int i = 0; i < cantidad; i++)
+                        posPro[i] = Integer.parseInt(String.valueOf(data.getExtras().getIntegerArrayList("posicion").get(i)));
+                }catch (Exception e){
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
 
                 miAdapter = new GestionPedidoAdapter(this, lista);
                 recyclerProdu.setAdapter(miAdapter);
@@ -152,49 +167,60 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         switch (item.getItemId()){
             case R.id.item_ready:
                 generarPedido();
-                Snackbar.make(this.recyclerProdu, "Pedido Creado!", Snackbar.LENGTH_LONG).show();
+                consultar();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void consultar() {
+        List<Pedido> pedidos;
+        String pedido = "Pedido ";
+        pedidos = Pedido.listAll(Pedido.class, "id");
+        pedido += "Registros: "+pedidos != null ? pedidos.size() : 0;
+
+        for (Pedido p : pedidos){
+            try {
+                String cantPed = "0";
+                pedido += " Cliente: " +p.getTercero().getTercero();
+                pedido += " Productos: "+p.getProducts().size();
+                for (Referencia r : p.getProducts()){
+                    cantPed = r.getCantPed();
+                    pedido += " Producto: "+r.getNomref();
+                    pedido += " Cantidad: "+ cantPed;
+                }
+            }catch (Exception e){
+                pedido += " Error: "+e.getMessage();
+            }
+            pedido+= " Total: "+ DecimalFormat.getCurrencyInstance(Locale.US).format(p.getPrecioTotal());
+        }
+        System.out.println("Su pedido fué: "+pedido);
+        Toast.makeText(this, pedido , Toast.LENGTH_LONG).show();
+
+    }
+
     private void generarPedido() {
 
-       /* String pedido = "\n PEDIDO PARA "+listaTerce.get(posFin).getTercero().toString();
-        pedido += "\n ********PRODUCTOS***************";
-        for (Referencia r : lista)
-            pedido += "\n" + r.getNomref() + "\n Cantidad: " + r.getQuantity()+ "\n Precio: "+r.getPrice();
-        Toast.makeText(this, "Su pedido fué: "+ pedido, Toast.LENGTH_LONG).show();
-
-
-        intent.putExtra("Pedido", listaTerce.get(posFin).getTercero().toString());
-*/
-        Intent intent = new Intent();
-        /**
-         * Enviamos los parametros para generar el pedido
-         */
-
         double costEnd = 0;
-        Pedido mPedido = new Pedido();
-        mPedido.setTercero(listaTerce.get(posFin).getDni().toString());
-        mPedido.setProducto(lista);
+
         for (Referencia producto : lista) {
-
             costEnd += Double.parseDouble(producto.getPrice());
-
-
         }
-        mPedido.setCost_total(costEnd);
 
-        mPedido.save();
-
-
-       /* intent.putExtra("ObjectPedido", mPedido);
-
-        setResult(RESULT_OK, intent);
-*/
+        Pedido miPedido = new Pedido(listaTerce.get(posFin), costEnd);
+        miPedido.save();
+        List<Referencia> productos = new ArrayList<>();
+        productos = Referencia.listAll(Referencia.class);
+        try {
+            for (int i = 0; i < posPro.length; i++) {
+                //Toast.makeText(this, String.format("Existen %1$s productos", productos.get(posPro[i]).getCodRef()), Toast.LENGTH_SHORT).show();
+                PedidoReferencia pedidoReferencia = new PedidoReferencia(miPedido, productos.get(posPro[i]));
+                pedidoReferencia.save();
+            }
+        }catch (Exception e){
+            Toast.makeText(this, String.format("Ocurrió un %1$s excepción", e.getMessage()), Toast.LENGTH_LONG).show();
+        }
         finish();
-
     }
 
 

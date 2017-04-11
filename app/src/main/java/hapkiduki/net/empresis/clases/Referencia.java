@@ -3,6 +3,7 @@ package hapkiduki.net.empresis.clases;
 import com.orm.SugarRecord;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,18 +15,18 @@ public class Referencia extends SugarRecord implements Serializable{
     private String codRef, nomref;
     private String price;
     private String quantity;
-    private Boolean state;
+    private String cantPed;
 
 
     public Referencia() {
     }
 
-    public Referencia(String codRef, String nomref, String price, String quantity, Boolean state) {
+    public Referencia(String codRef, String nomref, String price, String quantity, String cantPed) {
         this.codRef = codRef;
         this.nomref = nomref;
         this.price = price;
         this.quantity = quantity;
-        this.state = state;
+        this.cantPed = cantPed;
     }
 
 
@@ -59,10 +60,23 @@ public class Referencia extends SugarRecord implements Serializable{
         this.nomref = nomref;
     }
 
-    public Boolean getState(){return state;}
 
-    public void setState(Boolean state) {
-        this.state = state;
+    /**
+     * Relaciones de datos
+     */
+    public List<Pedido> getPedidos() {
+        List<Pedido> result = new ArrayList<>();
+        for (PedidoReferencia pedidoReferencia : PedidoReferencia.find(PedidoReferencia.class, "referencia = ?", getId().toString())){
+            result.add(pedidoReferencia.getPedido());
+        }
+        return result;
     }
 
+    public String getCantPed() {
+        return cantPed;
+    }
+
+    public void setCantPed(String cantPed) {
+        this.cantPed = cantPed;
+    }
 }

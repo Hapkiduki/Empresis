@@ -9,12 +9,12 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +44,7 @@ import hapkiduki.net.empresis.clases.RecyclerClick;
 import hapkiduki.net.empresis.clases.RecyclerTouch;
 import hapkiduki.net.empresis.clases.Referencia;
 
-public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
+public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaRefe;
@@ -55,8 +55,12 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     ReferenciaAdapter miAdapter;
     List<Integer> listaPosiciones;
 
-    Intent intent;
     int quantity;
+
+    SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayoutManager layoutManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,39 +68,44 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         setContentView(R.layout.activity_productos);
 
 
+        layoutManager = new LinearLayoutManager(this);
         listaRefe=new ArrayList<Referencia>();
         recyclerReferencias = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerReferencias.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
+        // recyclerReferencias.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
+        recyclerReferencias.setLayoutManager(layoutManager);
         recyclerReferencias.setHasFixedSize(true);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         quantity = 0;
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
         request = Volley.newRequestQueue(this);
 
-        cargarWebServiceImagenes();
-
+        cargarWebService();
         implementarInterfaz();
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
-                List<Referencia> items = new ArrayList<>();
+            List<Referencia> items = new ArrayList<>();
+            for (int posicion : listaPosiciones){
+                items.add(listaRefe.get(posicion));
+            }
 
-                for (int posicion : listaPosiciones){
-                    items.add(listaRefe.get(posicion));
-                }
-                Intent intent = new Intent();
-                intent.putExtra("Productos", (Serializable) items);
-                setResult(RESULT_OK, intent);
-                finish();
-                super.onBackPressed();
-                return true;
+
+            Intent intent = new Intent();
+            intent.putExtra("Productos", (Serializable) items);
+            intent.putIntegerArrayListExtra("posicion", (ArrayList<Integer>) (listaPosiciones.size() > 0 ? listaPosiciones : 0));
+            setResult(RESULT_OK, intent);
+            finish();
+            super.onBackPressed();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -139,8 +148,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
     }
 
-
-    private void cargarWebServiceImagenes() {
+    private void cargarWebService() {
 
         pDialog=new ProgressDialog(this);
         pDialog.setMessage("Cargando Productos...");
@@ -150,70 +158,67 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.104/empresis/WsJSONConsultaReferencia.php";
+            String url = "http://192.168.0.103:81/Empresis/conexion.php";
+            //String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     Referencia referencias;
 
-                    /*
-                    * Traemos la lista local de referencias mediante la librería Sugar
-                    * y los eliminamos
-                    * */
-                    listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
-                    Referencia.deleteAll(Referencia.class);
+                    /**
+                     * Traemos la lista local de referencias mediante la librería Sugar
+                     * y los eliminamos
+                     */
+                    //listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
+                    //Referencia.deleteAll(Referencia.class);
                     try {
 
-                        JSONArray json=response.optJSONArray("fp_refer");
+                        JSONArray json=response.optJSONArray("Product");
 
                         for (int i=0; i<json.length();i++){
                             referencias=new Referencia();
                             JSONObject jsonArrayChild=json.getJSONObject(i);
-                            referencias.setNomref(jsonArrayChild.optString("NOMBREREF"));
-                            referencias.setCodRef(jsonArrayChild.optString("CODIGOREF"));
-                            referencias.setPrice(jsonArrayChild.optString("VR_VENIVA"));
+                            referencias.setNomref(jsonArrayChild.optString("NameRef"));
+                            referencias.setCodRef(jsonArrayChild.optString("CodRef"));
+                            referencias.setPrice(jsonArrayChild.optString("Vr_Veniva"));
                             referencias.setQuantity("1");
-                            referencias.setState(false);
+                            referencias.setCantPed("1");
                             listaRefe.add(referencias);
-                            //System.out.println(referencias.getNomref().toString());
                             /**
                              * Guardamos la lista de referencias de manera local con sugar
                              * */
                             referencias.save();
                         }
                         pDialog.dismiss();
-                        //ReferenciaAdapter miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
-
-
                         miAdapter=new ReferenciaAdapter(getApplicationContext(),listaRefe);
+
                         recyclerReferencias.setAdapter(miAdapter);
+                        swipeRefreshLayout.setRefreshing(false);
 
                     } catch (JSONException e) {
                         System.out.println();
                         e.printStackTrace();
                         pDialog.hide();
                         System.out.println(response);
-                        Toast.makeText(getApplication(), "No se ha podido establecer conexión con el servidor" +
+                        Toast.makeText(getApplicationContext(), "No se ha podido establecer conexión con el servidor" +
                                 " "+response, Toast.LENGTH_LONG).show();
                         datosLocales();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }
-
-
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
                     pDialog.dismiss();
                     if (error.toString().contains("com.android.volley.NoConnectionError")){
-                        Toast.makeText(getApplication(), "No se puede conectar, verifique que el servidor se encuentre disponible", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "No se puede conectar, verifique que el servidor se encuentre disponible", Toast.LENGTH_LONG).show();
+
                     }else{
-                        Toast.makeText(getApplication(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "No se puede conectar "+error.toString(), Toast.LENGTH_LONG).show();
                     }
 
-                    System.out.println();
-                    Log.d("ERROR: ", error.toString());
                     datosLocales();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             });
 
@@ -223,22 +228,13 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
             request.add(jsonObjectRequest);
         } else {
-            Toast.makeText(getApplication(), "No se pudo sincronizar, Verifique que " +
-                    "cuenta con acceso a Internet", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "No se pudo sincronizar, Verifique que cuenta con acceso a Internet", Toast.LENGTH_SHORT).show();
+
             pDialog.dismiss();
+            listaRefe= (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
 
-            /**
-             * Cargamos los datos al recicler view de forma local
-             * con SUGAR
-             */
-
-            /*listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
-            miAdapter=new ReferenciaAdapter(getApplication(),listaRefe);
-            recyclerReferencias.setAdapter(miAdapter);
-
-
-*/
             datosLocales();
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -292,7 +288,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     //Dialog para escojer la cantidad
     private void numberPickerDialog(final int position){
 
-        final Referencia referencia = new Referencia();
+        //final Referencia referencia = new Referencia();
         NumberPicker numberPicker = new NumberPicker(this);
         numberPicker.setMaxValue(100);
         numberPicker.setMinValue(1);
@@ -300,12 +296,14 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 quantity = newVal;
-                listaRefe.get(position).setQuantity(""+quantity);
+                //listaRefe.get(position).setQuantity(""+quantity);
+                listaRefe.get(position).setCantPed(""+quantity);
             }
         };
 
         numberPicker.setOnValueChangedListener(changeListener);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this).setView(numberPicker).setIcon(R.mipmap.ic_launcher);
+        dialog.setInverseBackgroundForced(true);
         dialog.setTitle("Cantidad de producto").setMessage("Seleccione la cantidad de producto a agregar entre 1 a 100");
         dialog.setPositiveButton("Seleccionar", new DialogInterface.OnClickListener() {
             @Override
@@ -316,5 +314,12 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         dialog.show();
     }
 
+    //ESte metodo es el encargado de actualizar el recyclerView
+    @Override
+    public void onRefresh() {
+
+        cargarWebService();
+    }
 
 }
+

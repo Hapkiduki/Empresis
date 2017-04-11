@@ -42,6 +42,10 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
     JsonObjectRequest jsonObjectRequest;
     TerceroAdapter miAdapter;
 
+
+    //ConectionService con;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +62,9 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
 
     }
 
-   private void cargarWebServiceImagenes() {
+
+
+    private void cargarWebServiceImagenes() {
         pDialog=new ProgressDialog(this);
         pDialog.setMessage("Cargando Terceros...");
         pDialog.show();
@@ -67,7 +73,7 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            String url = "http://192.168.0.103:80/empresis/WsJSONConsultaTercero.php";
+            String url = "http://192.168.0.103:81/empresis/WsJSONConsultaTercero.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -82,15 +88,15 @@ public class TerceroActivity extends AppCompatActivity implements SearchView.OnQ
                     Tercero.deleteAll(Tercero.class);
                     try {
 
-                        JSONArray json=response.optJSONArray("fp_terce");
+                        JSONArray json=response.optJSONArray("Customer");
 
                         for (int i=0; i<json.length();i++){
                             terceros = new Tercero();
                             JSONObject jsonArrayChild=json.getJSONObject(i);
-                            terceros.setDni(jsonArrayChild.optString("CODIGOCLI"));
-                            terceros.setDireccion(jsonArrayChild.optString("DIRECCION"));
-                            terceros.setTercero(jsonArrayChild.optString("NOMBRECLI"));
-                            terceros.setTelefono(jsonArrayChild.optString("TELEFONO"));
+                            terceros.setDni(jsonArrayChild.optString("CodigoCli"));
+                            terceros.setDireccion(jsonArrayChild.optString("Direccion"));
+                            terceros.setTercero(jsonArrayChild.optString("NombreCli"));
+                            terceros.setTelefono(jsonArrayChild.optString("Telefono"));
                             listaTerce.add(terceros);
                             //System.out.println(referencias.getNomref().toString());
 
