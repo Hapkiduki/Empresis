@@ -166,61 +166,67 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
                 vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            // for (Pedido p : pedidos) {
+            for (Pedido p : pedidos) {
 
-            String cliente =  "Carlos";
+          /*  String cliente =  "Carlos";
             String[] productos = {"Papaya", "Mango", "Pera", "Sandia"};
             String cantidad = "10";
+*/
+                String[] productos = new String[p.getProducts().size()];
+                String cliente =  p.getTercero().getTercero();
+                for(int i = 0; i < p.getProducts().size(); i++) {
+                    productos[i] = p.getProducts().get(i).getNomref()+", "+p.getProducts().get(i).getCantPed();
+                }
+                String total = ""+p.getPrecioTotal();
 
+                HashMap<String, String> map = new HashMap<>();// Mapeo previo
 
-            HashMap<String, String> map = new HashMap<>();// Mapeo previo
+                map.put("cliente", cliente);
+                // for (int i = 0; i < productos.length; i++) {
+                map.put("producto", Arrays.toString(productos));
+                //}
+                map.put("total", total);
 
-            map.put("cliente", cliente);
-            // for (int i = 0; i < productos.length; i++) {
-            map.put("producto", Arrays.toString(productos));
-            //}
-            map.put("cantidad", cantidad);
+                // Crear nuevo objeto Json basado en el mapa
+                JSONObject jobject = new JSONObject(map);
 
-            // Crear nuevo objeto Json basado en el mapa
-            JSONObject jobject = new JSONObject(map);
-
-            // Depurando objeto Json...
-            Log.d(TAG, jobject.toString());
-            // Actualizar datos en el servidor
-            VolleySingleton.getInstance(getActivity()).addToRequestQueue(
-                    new JsonObjectRequest(
-                            Request.Method.POST,
-                            "http://192.168.0.103:81/Empresis/pedido.php",
-                            jobject,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    // Procesar la respuesta del servidor
-                                    procesarRespuesta(response);
-                                }
-                            }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d(TAG, "Error Volley: " + error.getMessage());
-                        }
-                    }
-
-                    ) {
-                        @Override
-                        public Map<String, String> getHeaders() {
-                            Map<String, String> headers = new HashMap<String, String>();
-                            headers.put("Content-Type", "application/json; charset=utf-8");
-                            headers.put("Accept", "application/json");
-                            return headers;
+                // Depurando objeto Json...
+                Log.d(TAG, jobject.toString());
+                // Actualizar datos en el servidor
+                VolleySingleton.getInstance(getActivity()).addToRequestQueue(
+                        new JsonObjectRequest(
+                                Request.Method.POST,
+                                "http://192.168.0.103:81/Empresis/pedido.php",
+                                jobject,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        // Procesar la respuesta del servidor
+                                        procesarRespuesta(response);
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "Error Volley: " + error.getMessage());
+                            }
                         }
 
-                        @Override
-                        public String getBodyContentType() {
-                            return "application/json; charset=utf-8" + getParamsEncoding();
+                        ) {
+                            @Override
+                            public Map<String, String> getHeaders() {
+                                Map<String, String> headers = new HashMap<String, String>();
+                                headers.put("Content-Type", "application/json; charset=utf-8");
+                                headers.put("Accept", "application/json");
+                                return headers;
+                            }
+
+                            @Override
+                            public String getBodyContentType() {
+                                return "application/json; charset=utf-8" + getParamsEncoding();
+                            }
                         }
-                    }
-            );
-            // }
+                );
+            }
             pDialog.dismiss();
         } else {
             SINC = false;
