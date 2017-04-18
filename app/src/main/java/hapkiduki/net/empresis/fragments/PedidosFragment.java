@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -173,9 +174,12 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
             String cantidad = "10";
 */
                 String[] productos = new String[p.getProducts().size()];
+                String[] cantidades = new String[p.getProducts().size()];
+
                 String cliente =  p.getTercero().getTercero();
                 for(int i = 0; i < p.getProducts().size(); i++) {
-                    productos[i] = p.getProducts().get(i).getNomref()+", "+p.getProducts().get(i).getCantPed();
+                    productos[i] = p.getProducts().get(i).getNomref();
+                    cantidades[i] = p.getProducts().get(i).getCantPed();
                 }
                 String total = ""+p.getPrecioTotal();
 
@@ -185,7 +189,8 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
                 // for (int i = 0; i < productos.length; i++) {
                 map.put("producto", Arrays.toString(productos));
                 //}
-                map.put("total", total);
+                map.put("cantidad", Arrays.toString(cantidades));
+                //map.put("total", total);
 
                 // Crear nuevo objeto Json basado en el mapa
                 JSONObject jobject = new JSONObject(map);
