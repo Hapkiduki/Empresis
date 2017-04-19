@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.TerceroAdapter;
+import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.Tercero;
 
 
@@ -79,6 +80,7 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
     }
 
     private void cargarWebService() {
+
         request = Volley.newRequestQueue(this.getContext());
         pDialog=new ProgressDialog(getContext());
         pDialog.setMessage("Cargando Terceros...");

@@ -1,13 +1,12 @@
 package hapkiduki.net.empresis.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,49 +21,50 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.PedidoAdapter;
-import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.Referencia;
-import hapkiduki.net.empresis.clases.Tercero;
+import hapkiduki.net.empresis.clases.VolleySingleton;
 
 
 public class PedidosFragment extends Fragment implements SearchView.OnQueryTextListener{
+
+    /**
+     * Etiqueta para depuración
+     */
+    private static final String TAG = PedidosFragment.class.getSimpleName();
+
 
     View vista;
 
     RecyclerView recyclerPedidos;
     List<Pedido> pedidos;
     PedidoAdapter miAdapter;
-    LinearLayout contenedor
-            ;
+    LinearLayout contenedor;
     ProgressDialog pDialog;
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
+
+    boolean SINC = false;
 
     public PedidosFragment() {
 
@@ -82,7 +82,6 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
     }
 
@@ -147,19 +146,140 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         itemSync.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                sincronizarPedidos();
-                Pedido.deleteAll(Pedido.class);
+                if(sincronizarPedidos()) {Pedido.deleteAll(Pedido.class);}
                 cargarWebService();
                 contenedor.setVisibility(pedidos.size() > 0 ? View.INVISIBLE : View.VISIBLE);
+
                 return true;
             }
         });
-        itemSync.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
+        // itemSync.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
+        itemSync.setVisible(true);
     }
 
-    private void sincronizarPedidos() {
-       
+    private boolean sincronizarPedidos() {
+
+        pDialog=new ProgressDialog(vista.getContext());
+        pDialog.setMessage("Sincronizando Pedidos...");
+        pDialog.show();
+
+        ConnectivityManager connMgr = (ConnectivityManager)
+                vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            for (Pedido p : pedidos) {
+
+          /*  String cliente =  "Carlos";
+            String[] productos = {"Papaya", "Mango", "Pera", "Sandia"};
+            String cantidad = "10";
+*/
+                String[] productos = new String[p.getProducts().size()];
+                String[] cantidades = new String[p.getProducts().size()];
+
+                String cliente =  p.getTercero().getTercero();
+                for(int i = 0; i < p.getProducts().size(); i++) {
+                    productos[i] = p.getProducts().get(i).getNomref();
+                    cantidades[i] = p.getProducts().get(i).getCantPed();
+                }
+                String total = ""+p.getPrecioTotal();
+
+                HashMap<String, String> map = new HashMap<>();// Mapeo previo
+
+                map.put("cliente", cliente);
+                // for (int i = 0; i < productos.length; i++) {
+                map.put("producto", Arrays.toString(productos));
+                //}
+                map.put("cantidad", Arrays.toString(cantidades));
+                //map.put("total", total);
+
+                // Crear nuevo objeto Json basado en el mapa
+                JSONObject jobject = new JSONObject(map);
+
+                // Depurando objeto Json...
+                Log.d(TAG, jobject.toString());
+                // Actualizar datos en el servidor
+                VolleySingleton.getInstance(getActivity()).addToRequestQueue(
+                        new JsonObjectRequest(
+                                Request.Method.POST,
+                                "http://192.168.0.103:81/Empresis/pedido.php",
+                                jobject,
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        // Procesar la respuesta del servidor
+                                        procesarRespuesta(response);
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "Error Volley: " + error.getMessage());
+                            }
+                        }
+
+                        ) {
+                            @Override
+                            public Map<String, String> getHeaders() {
+                                Map<String, String> headers = new HashMap<String, String>();
+                                headers.put("Content-Type", "application/json; charset=utf-8");
+                                headers.put("Accept", "application/json");
+                                return headers;
+                            }
+
+                            @Override
+                            public String getBodyContentType() {
+                                return "application/json; charset=utf-8" + getParamsEncoding();
+                            }
+                        }
+                );
+            }
+            pDialog.dismiss();
+        } else {
+            SINC = false;
+            Toast.makeText(vista.getContext(), "No se pudo sincronizar, Verifique que cuenta con acceso a Internet", Toast.LENGTH_SHORT).show();
+            pDialog.dismiss();
+        }
+
+
+        return  SINC;
     }
+
+    private void procesarRespuesta(JSONObject response) {
+        try {
+            // Obtener estado
+            String estado = null;
+            try {
+                estado = response.getString("estado");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            // Obtener mensaje
+            String mensaje = response.getString("mensaje");
+
+            switch (estado) {
+                case "1":
+                    SINC = false;
+                    // Mostrar mensaje
+                    Toast.makeText(
+                            getActivity(),
+                            mensaje,
+                            Toast.LENGTH_LONG).show();
+
+                    break;
+
+                case "2":
+                    SINC = false;
+                    // Mostrar mensaje
+                    Toast.makeText(
+                            getActivity(),
+                            mensaje,
+                            Toast.LENGTH_LONG).show();
+                    break;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public boolean onQueryTextSubmit(String query) {
