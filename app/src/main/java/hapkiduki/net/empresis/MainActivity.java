@@ -9,7 +9,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import hapkiduki.net.empresis.Activities.EmpresisActivity;
+import hapkiduki.net.empresis.Activities.PruebaActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                Intent intent = new Intent(MainActivity.this, EmpresisActivity.class);
+                Intent intent = new Intent(MainActivity.this, PruebaActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
                 MainActivity.this.finish();

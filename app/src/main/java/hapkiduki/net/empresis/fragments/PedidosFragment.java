@@ -6,7 +6,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.ArrayMap;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,12 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,7 +39,6 @@ import java.util.Map;
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.PedidoAdapter;
 import hapkiduki.net.empresis.clases.Pedido;
-import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.VolleySingleton;
 
 
@@ -61,8 +57,6 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
     PedidoAdapter miAdapter;
     LinearLayout contenedor;
     ProgressDialog pDialog;
-    RequestQueue request;
-    JsonObjectRequest jsonObjectRequest;
 
     boolean SINC = false;
 
@@ -71,11 +65,8 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
     }
 
 
-    public static PedidosFragment newInstance(String param1, String param2) {
+    public static PedidosFragment newInstance() {
         PedidosFragment fragment = new PedidosFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -92,7 +83,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         vista = inflater.inflate(R.layout.fragment_pedidos, container, false);
         setHasOptionsMenu(true);
 
-        pedidos = new ArrayList<Pedido>();
+        pedidos = new ArrayList<>();
         recyclerPedidos = (RecyclerView) vista.findViewById(R.id.recycler_pedidos);
         recyclerPedidos.setLayoutManager(new LinearLayoutManager(vista.getContext()));
         recyclerPedidos.setHasFixedSize(true);
@@ -159,7 +150,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
 
     private boolean sincronizarPedidos() {
 
-        pDialog=new ProgressDialog(vista.getContext());
+        pDialog=new ProgressDialog(getContext());
         pDialog.setMessage("Sincronizando Pedidos...");
         pDialog.show();
 
@@ -175,11 +166,13 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
 */
                 String[] productos = new String[p.getProducts().size()];
                 String[] cantidades = new String[p.getProducts().size()];
+                String[] precios = new String[p.getProducts().size()];
 
                 String cliente =  p.getTercero().getTercero();
                 for(int i = 0; i < p.getProducts().size(); i++) {
                     productos[i] = p.getProducts().get(i).getNomref();
                     cantidades[i] = p.getProducts().get(i).getCantPed();
+                    precios[i] = p.getProducts().get(i).getPrice();
                 }
                 String total = ""+p.getPrecioTotal();
 
@@ -190,6 +183,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
                 map.put("producto", Arrays.toString(productos));
                 //}
                 map.put("cantidad", Arrays.toString(cantidades));
+                map.put("precio", Arrays.toString(precios));
                 //map.put("total", total);
 
                 // Crear nuevo objeto Json basado en el mapa

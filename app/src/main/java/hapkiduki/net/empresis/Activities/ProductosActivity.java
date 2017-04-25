@@ -129,6 +129,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
 
 
     private void obtenerSeleccionados(int position) {
+
         listaPosiciones = new ArrayList<>();
         miAdapter.toggleSelection(position);
 
@@ -140,6 +141,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         //Loop all selected ids
         for (int i = (selected.size() - 1); i >= 0; i--) {
             if (selected.valueAt(i)) {
+                Toast.makeText(this, "Entra", Toast.LENGTH_SHORT).show();
                 listaPosiciones.add(selected.keyAt(i));
             }
         }
@@ -159,7 +161,6 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && !networkInfo.isConnected()) {
             String url = "http://192.168.0.103:81/Empresis/conexion.php";
-            //String url = "http://192.168.0.102:81/empresis/WsJSONConsultaReferencia.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

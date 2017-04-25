@@ -59,7 +59,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
         lista = new ArrayList<>();
         listaTerce = new ArrayList<>();
-        //listaTerce=new ArrayList<Referencia>();
+
         recyclerProdu = (RecyclerView) findViewById(R.id.recycler_produ);
         recyclerProdu.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
         recyclerProdu.setHasFixedSize(true);
@@ -188,6 +188,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
                     cantPed = r.getCantPed();
                     pedido += " Producto: "+r.getNomref();
                     pedido += " Cantidad: "+ cantPed;
+                    pedido += "costo: "+ r.getPrice();
                 }
             }catch (Exception e){
                 pedido += " Error: "+e.getMessage();

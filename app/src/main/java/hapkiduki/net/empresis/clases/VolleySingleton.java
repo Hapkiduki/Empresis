@@ -10,14 +10,14 @@ import com.android.volley.toolbox.Volley;
  * Created by Programa-PC on 15/04/2017.
  */
 
-public final class VolleySingleton {
+public class VolleySingleton {
     // Atributos
-    private static VolleySingleton singleton;
+    private static VolleySingleton mInstance;
     private RequestQueue requestQueue;
-    private static Context context;
+    private static Context contexto;
 
     private VolleySingleton(Context context) {
-        VolleySingleton.context = context;
+        contexto = context;
         requestQueue = getRequestQueue();
     }
 
@@ -27,10 +27,10 @@ public final class VolleySingleton {
      * @return Instancia
      */
     public static synchronized VolleySingleton getInstance(Context context) {
-        if (singleton == null) {
-            singleton = new VolleySingleton(context.getApplicationContext());
+        if (mInstance == null) {
+            mInstance = new VolleySingleton(context);
         }
-        return singleton;
+        return mInstance;
     }
 
     /**
@@ -39,7 +39,7 @@ public final class VolleySingleton {
      */
     public RequestQueue getRequestQueue() {
         if (requestQueue == null) {
-            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+            requestQueue = Volley.newRequestQueue(contexto.getApplicationContext());
         }
         return requestQueue;
     }

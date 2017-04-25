@@ -10,4 +10,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_pedidos">Gestión de pedidos</string>
+    <string name="title_activity_prueba">PruebaActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="item_inicio">Inicio</string>
+    <string name="item_terceros">Terceros</string>
+    <string name="item_referencias">Referencias</string>
+    <string name="item_pedidos">Pedidos</string>
+
 </resources>

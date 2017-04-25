@@ -26,6 +26,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.orm.SugarContext;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +38,7 @@ import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.ReferenciaAdapter;
 import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.Referencia;
+import hapkiduki.net.empresis.clases.VolleySingleton;
 
 
 public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTextListener{
@@ -58,18 +60,14 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
     }
 
 
-    public static ReferenciaFragment newInstance(String param1, String param2) {
+    public static ReferenciaFragment newInstance() {
         ReferenciaFragment fragment = new ReferenciaFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
     }
 
@@ -79,13 +77,14 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
 
         vista = inflater.inflate(R.layout.fragment_referencia, container, false);
         setHasOptionsMenu(true);
-
+        SugarContext.init(getActivity());
         listaRefe=new ArrayList<Referencia>();
         recyclerReferencias = (RecyclerView) vista.findViewById(R.id.recycler_view);
         recyclerReferencias.setLayoutManager(new LinearLayoutManager(vista.getContext()));
         recyclerReferencias.setHasFixedSize(true);
 
-        request = Volley.newRequestQueue(vista.getContext());
+        //request = Volley.newRequestQueue(vista.getContext());
+        request = VolleySingleton.getInstance(vista.getContext()).getRequestQueue();
         cargarWebService();
         return vista;
     }
@@ -101,7 +100,8 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             Pedido.deleteAll(Pedido.class);
-            String url = "http://192.168.0.103:81/Empresis/conexion.php";
+            //String url = "http://192.168.0.104:81/Empresis/conexion.php";
+            String url = "https://empresis.000webhostapp.com/conexion.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -166,7 +166,8 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                     DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-            request.add(jsonObjectRequest);
+            VolleySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectRequest);
+            //request.add(jsonObjectRequest);
         } else {
             Toast.makeText(vista.getContext(), "No se pudo sincronizar, Verifique que cuenta con acceso a Internet", Toast.LENGTH_SHORT).show();
 
