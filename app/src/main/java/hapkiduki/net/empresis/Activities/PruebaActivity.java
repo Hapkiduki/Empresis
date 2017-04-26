@@ -37,6 +37,7 @@ public class PruebaActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener,TerceroFragment.OnFragmentInteractionListener,
         ReferenciaFragment.OnFragmentInteractionListener, PedidosFragment.OnFragmentInteractionListener {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,7 +179,6 @@ public class PruebaActivity extends AppCompatActivity
 
         final CharSequence[] items = {" Terceros "," Referencias"," Pedidos "};
         final boolean[] itemsele = {false, false, true};
-
         final ArrayList seletedItems=new ArrayList();
 
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -201,13 +201,9 @@ public class PruebaActivity extends AppCompatActivity
                 }).setPositiveButton("Iniciar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        ProgressDialog dialogo;
-                        dialogo = new ProgressDialog(PruebaActivity.this);
-                        dialogo.setTitle("Sincronizando");
-                        dialogo.setMessage("Espere mientras se sincroniza... Este proceso puede tardar unos minutos.");
-                        dialogo.setIcon(R.mipmap.ic_launcher);
-                        dialogo.show();
+
                         Sincronizar.iniciarSincronizacion(PruebaActivity.this, seletedItems);
+
 
                     }
                 }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -217,7 +213,6 @@ public class PruebaActivity extends AppCompatActivity
                     }
                 }).create();
         dialog.show();
-
     }
 
     @Override
