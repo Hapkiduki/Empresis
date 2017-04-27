@@ -1,25 +1,31 @@
 package hapkiduki.net.empresis.Activities;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.orm.SugarContext;
@@ -37,7 +43,6 @@ public class PruebaActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener,TerceroFragment.OnFragmentInteractionListener,
         ReferenciaFragment.OnFragmentInteractionListener, PedidosFragment.OnFragmentInteractionListener {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +50,7 @@ public class PruebaActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         SugarContext.init(this);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +73,7 @@ public class PruebaActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
 
     private void seleccion() {
 
@@ -123,15 +130,19 @@ public class PruebaActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             fragment = new HomeFragment();
             fragmentSeleccionado = true;
+            setTitle(item.getTitle());
         } else if (id == R.id.nav_gallery) {
             fragment = new TerceroFragment();
             fragmentSeleccionado = true;
+            setTitle(item.getTitle());
         } else if (id == R.id.nav_slideshow) {
             fragment = new ReferenciaFragment();
             fragmentSeleccionado = true;
+            setTitle(item.getTitle());
         } else if (id == R.id.nav_manage) {
             fragment = new PedidosFragment();
             fragmentSeleccionado = true;
+            setTitle(item.getTitle());
         }else if (id == R.id.nav_sinc){
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -171,7 +182,6 @@ public class PruebaActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
-        setTitle(item.getTitle());
         return true;
     }
 

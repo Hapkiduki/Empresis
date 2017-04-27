@@ -7,9 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.clases.Referencia;
@@ -22,6 +25,13 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
 
     private Context context;
     private List<Referencia> referencias;
+    private List<Referencia> oldReferencias;
+
+    public interface DeleteListener{
+        public void pinchado(int position);
+    }
+
+    DeleteListener listener;
 
 
     public GestionPedidoAdapter(Context context, List<Referencia> referencias) {
@@ -35,17 +45,22 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
         return new GestionPedidoAdapter.ViewHolder(itemView);
     }
 
+
     @Override
-    public void onBindViewHolder(GestionPedidoAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final GestionPedidoAdapter.ViewHolder holder, final int position) {
         holder.product.setText(referencias.get(position).getNomref());
         holder.quantity.setText(referencias.get(position).getCantPed());
-        holder.price.setText("$/"+referencias.get(position).getPrice());
+        holder.price.setText(""+DecimalFormat.getCurrencyInstance(Locale.US).format(Double.parseDouble(referencias.get(position).getPrice())));
         holder.itemView.setTag(referencias.get(position));
 
         holder.x.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeItem(referencias, position);
+                listener = (DeleteListener) context;
+                if (oldReferencias.size() > 0) {
+                    Toast.makeText(context, "Posicion equivalente a: "+referencias.get(position).getNomref()+" /cantidad:"+referencias.size(), Toast.LENGTH_SHORT).show();
+                    //listener.pinchado(holder.getAdapterPosition());
+                }
             }
         });
 
@@ -59,6 +74,13 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
     @Override
     public int getItemCount() {
         return referencias.size();
+    }
+
+    public void setFilter(ArrayList<Referencia> query, List<Referencia> lastProducts) {
+        referencias = new ArrayList<>();
+        referencias.addAll(query);
+        oldReferencias = lastProducts;
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{

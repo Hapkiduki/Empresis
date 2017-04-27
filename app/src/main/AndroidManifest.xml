@@ -46,13 +46,16 @@
             android:configChanges="screenSize|orientation"
             android:label="Terceros" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".Activities.PedidosActivity"
             android:label="@string/title_activity_pedidos"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.ProductosActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Activities.PedidosActivity" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".Activities.PruebaActivity"
             android:label="@string/title_activity_prueba"
             android:theme="@style/AppTheme.NoActionBar"></activity>

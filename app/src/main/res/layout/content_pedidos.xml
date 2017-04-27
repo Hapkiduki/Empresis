@@ -29,6 +29,7 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
+            android:id="@+id/til_dni"
             android:layout_height="wrap_content"
             android:layout_marginLeft="22dp">
 
@@ -88,7 +89,7 @@
             android:src="@mipmap/ic_address" />
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_correo"
+            android:id="@+id/til_direccion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="22dp">
@@ -99,19 +100,17 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Dirección"
-                android:inputType="textEmailAddress" />
+                android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_produ"
-        android:layout_marginTop="26dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/area_correo"/>
+        android:layout_height="270dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
 
 
 

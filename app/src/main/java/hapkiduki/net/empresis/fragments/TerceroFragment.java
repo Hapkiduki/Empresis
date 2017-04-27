@@ -85,7 +85,8 @@ public class TerceroFragment extends Fragment implements SearchView.OnQueryTextL
         //request = Volley.newRequestQueue(this.getContext());
 
         try {
-            cargarWebService();
+            //cargarWebService();
+            datosLocales();
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("Error: ", "Ocasionado por: "+e.getMessage());

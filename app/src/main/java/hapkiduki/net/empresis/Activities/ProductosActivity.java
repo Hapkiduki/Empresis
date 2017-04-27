@@ -141,7 +141,6 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         //Loop all selected ids
         for (int i = (selected.size() - 1); i >= 0; i--) {
             if (selected.valueAt(i)) {
-                Toast.makeText(this, "Entra", Toast.LENGTH_SHORT).show();
                 listaPosiciones.add(selected.keyAt(i));
             }
         }

@@ -85,7 +85,8 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
 
         //request = Volley.newRequestQueue(vista.getContext());
         request = VolleySingleton.getInstance(vista.getContext()).getRequestQueue();
-        cargarWebService();
+        datosLocales();
+        //cargarWebService();
         return vista;
     }
 
