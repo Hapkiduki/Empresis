@@ -37,6 +37,7 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
     public GestionPedidoAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
         this.referencias = referencias;
+
     }
 
     @Override

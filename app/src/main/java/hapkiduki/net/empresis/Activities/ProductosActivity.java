@@ -36,9 +36,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     ReferenciaAdapter miAdapter;
     List<Integer> listaPosiciones;
     boolean filterStatus;
-
     int quantity;
-
     private LinearLayoutManager layoutManager;
 
 
@@ -136,7 +134,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
          */
 
         listaRefe = (ArrayList<Referencia>) Referencia.listAll(Referencia.class);
-        miAdapter=new ReferenciaAdapter(getApplication(),listaRefe);
+        miAdapter=new ReferenciaAdapter(this ,listaRefe);
         recyclerReferencias.setAdapter(miAdapter);
 
     }
@@ -214,11 +212,13 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     }
 
     @Override
-    public void choose(String codigo) {
+    public int choose(String codigo) {
+        int valor = 0;
         for (int i = 0; i < listaRefe.size(); i++) {
             if (listaRefe.get(i).getCodRef().trim() == codigo.trim())
-                Toast.makeText(this, "La posición es: "+i, Toast.LENGTH_SHORT).show();
+                valor = i+1;
         }
+        return valor;
     }
 }
 
