@@ -25,7 +25,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.orm.SugarContext;
 
 import org.json.JSONArray;
@@ -216,7 +215,7 @@ public class ReferenciaFragment extends Fragment implements SearchView.OnQueryTe
                 query.add(referencia);
             }
         }
-        miAdapter.filter(query);
+        miAdapter.filter(query, query);
         return true;
     }
 

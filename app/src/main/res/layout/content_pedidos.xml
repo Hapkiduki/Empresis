@@ -13,6 +13,9 @@
     tools:context="hapkiduki.net.empresis.Activities.PedidosActivity"
     tools:showIn="@layout/activity_pedidos">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/area_nombre"
@@ -37,7 +40,8 @@
                 android:id="@+id/ed_dni"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Cliente"/>
+                android:hint="Cliente"
+                android:inputType="number"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
@@ -112,7 +116,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />
 
-
+    </RelativeLayout>
 
 </RelativeLayout>
 

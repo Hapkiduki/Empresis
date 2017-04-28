@@ -18,10 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.TerceroDialog;
@@ -134,7 +132,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         FragmentManager fragmentManager = getFragmentManager();
         TerceroDialog terceroDialog = new TerceroDialog();
         terceroDialog.show(fragmentManager, "dialogTer");
-
     }
 
 
@@ -170,33 +167,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void consultar() {
-        List<Pedido> pedidos;
-        String pedido = "Pedido ";
-        pedidos = Pedido.listAll(Pedido.class, "id");
-        pedido += "Registros: "+pedidos != null ? pedidos.size() : 0;
-
-        for (Pedido p : pedidos){
-            try {
-                String cantPed = "0";
-                pedido += " Cliente: " +p.getTercero().getTercero();
-                pedido += " Productos: "+p.getProducts().size();
-                for (Referencia r : p.getProducts()){
-                    cantPed = r.getCantPed();
-                    pedido += " Producto: "+r.getNomref();
-                    pedido += " Cantidad: "+ cantPed;
-                    pedido += "costo: "+ r.getPrice();
-                }
-            }catch (Exception e){
-                pedido += " Error: "+e.getMessage();
-            }
-            pedido+= " Total: "+ DecimalFormat.getCurrencyInstance(Locale.US).format(p.getPrecioTotal());
-        }
-        System.out.println("Su pedido fué: "+pedido);
-        Toast.makeText(this, pedido , Toast.LENGTH_LONG).show();
-
     }
 
     private void generarPedido() {
@@ -257,12 +227,27 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         }
 
 
-        miAdapter.setFilter(query, lista);
+        miAdapter.setFilter(query);
         return true;
     }
 
     @Override
-    public void pinchado(int position) {
-        Toast.makeText(this, "ooooh joder me has pinchado!  "+position, Toast.LENGTH_LONG).show();
+    public void pinchado(String codigo) {
+
+        try{
+            int posCod = 0;
+            for (int i = 0; i < lista.size(); i++) {
+                if (lista.get(i).getCodRef() == codigo){
+                    posCod = i+1;
+                }
+            }
+            if (posCod > 0)
+                lista.remove(posCod - 1);
+
+            miAdapter.notifyDataSetChanged();
+        }catch (Exception e) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
     }
 }

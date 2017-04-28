@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,13 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     private Context context;
     private List<Referencia> referencias;
     private SparseBooleanArray mSelectedItemsIds;
+    List<Referencia> oldReferences;
 
+    public interface ChooseListener{
+        public void choose(String codigo);
+    }
+
+    ChooseListener listener;
 
 
     public ReferenciaAdapter(Context context, List<Referencia> referencias) {
@@ -38,7 +45,6 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list, parent, false);
-
         return new ViewHolder(itemView);
     }
 
@@ -52,24 +58,28 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     }
 
 
-    public void toggleSelection(int position) {
-        selectView(position, !mSelectedItemsIds.get(position));
+    public boolean toggleSelection(int position) {
+        return selectView(position, !mSelectedItemsIds.get(position));
     }
 
     //Remove selected selections
     public void removeSelection() {
+
         mSelectedItemsIds = new SparseBooleanArray();
         notifyDataSetChanged();
     }
 
-    private void selectView(int position, boolean value) {
-        if (value)
+    private boolean selectView(int position, boolean value) {
+        boolean valor = false;
+        if (value) {
             mSelectedItemsIds.put(position, value);
-        else
+            valor =  true;
+        }else{
             mSelectedItemsIds.delete(position);
-
+            valor = false;
+        }
         notifyDataSetChanged();
-
+        return valor;
     }
 
     //Get total selected count
@@ -111,7 +121,7 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
     }
 
-//Metodo de prueba
+    //Metodo de prueba
     private static class FooterViewHolder extends RecyclerView.ViewHolder {
         public ProgressBar getProgressBar() {
             return progressBar;
@@ -126,10 +136,12 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     }
 
     /** Creamos el filtro o Scope para recorrer nuestro recicler view */
-    public void filter(ArrayList<Referencia> query){
-        referencias = new ArrayList<>();
-        referencias.addAll(query);
+    public void filter(ArrayList<Referencia> query, ArrayList<Referencia> referencias){
+        this.referencias = new ArrayList<>();
+        this.referencias.addAll(query);
         notifyDataSetChanged();
+        oldReferences = referencias;
+
     }
 
     @Override

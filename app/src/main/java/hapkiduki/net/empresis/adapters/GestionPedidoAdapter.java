@@ -25,13 +25,13 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
 
     private Context context;
     private List<Referencia> referencias;
-    private List<Referencia> oldReferencias;
 
     public interface DeleteListener{
-        public void pinchado(int position);
+        public void pinchado(String codigo);
     }
 
     DeleteListener listener;
+    boolean filtroEstado;
 
 
     public GestionPedidoAdapter(Context context, List<Referencia> referencias) {
@@ -57,10 +57,10 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
             @Override
             public void onClick(View v) {
                 listener = (DeleteListener) context;
-                if (oldReferencias.size() > 0) {
-                    Toast.makeText(context, "Posicion equivalente a: "+referencias.get(position).getNomref()+" /cantidad:"+referencias.size(), Toast.LENGTH_SHORT).show();
-                    //listener.pinchado(holder.getAdapterPosition());
-                }
+                listener.pinchado(referencias.get(holder.getAdapterPosition()).getCodRef());
+                if (filtroEstado)
+                removeItem(referencias, position);
+
             }
         });
 
@@ -76,10 +76,10 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
         return referencias.size();
     }
 
-    public void setFilter(ArrayList<Referencia> query, List<Referencia> lastProducts) {
+    public void setFilter(ArrayList<Referencia> query) {
+        filtroEstado = true;
         referencias = new ArrayList<>();
         referencias.addAll(query);
-        oldReferencias = lastProducts;
         notifyDataSetChanged();
     }
 
@@ -99,12 +99,6 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
         }
     }
 
-    //Creamos el filtro o Scope para recorrer nuestro recicler view
-    public void filter(ArrayList<Referencia> query){
-        referencias = new ArrayList<>();
-        referencias.addAll(query);
-        notifyDataSetChanged();
-    }
 
     @Override
     public long getItemId(int position) {
