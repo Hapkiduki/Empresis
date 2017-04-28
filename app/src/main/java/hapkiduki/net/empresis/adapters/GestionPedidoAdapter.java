@@ -7,9 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.clases.Referencia;
@@ -23,6 +26,13 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
     private Context context;
     private List<Referencia> referencias;
 
+    public interface DeleteListener{
+        public void pinchado(String codigo);
+    }
+
+    DeleteListener listener;
+    boolean filtroEstado;
+
 
     public GestionPedidoAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
@@ -35,17 +45,22 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
         return new GestionPedidoAdapter.ViewHolder(itemView);
     }
 
+
     @Override
-    public void onBindViewHolder(GestionPedidoAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final GestionPedidoAdapter.ViewHolder holder, final int position) {
         holder.product.setText(referencias.get(position).getNomref());
         holder.quantity.setText(referencias.get(position).getCantPed());
-        holder.price.setText("$/"+referencias.get(position).getPrice());
+        holder.price.setText(""+DecimalFormat.getCurrencyInstance(Locale.US).format(Double.parseDouble(referencias.get(position).getPrice())));
         holder.itemView.setTag(referencias.get(position));
 
         holder.x.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                listener = (DeleteListener) context;
+                listener.pinchado(referencias.get(holder.getAdapterPosition()).getCodRef());
+                if (filtroEstado)
                 removeItem(referencias, position);
+
             }
         });
 
@@ -59,6 +74,13 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
     @Override
     public int getItemCount() {
         return referencias.size();
+    }
+
+    public void setFilter(ArrayList<Referencia> query) {
+        filtroEstado = true;
+        referencias = new ArrayList<>();
+        referencias.addAll(query);
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
@@ -77,12 +99,6 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
         }
     }
 
-    //Creamos el filtro o Scope para recorrer nuestro recicler view
-    public void filter(ArrayList<Referencia> query){
-        referencias = new ArrayList<>();
-        referencias.addAll(query);
-        notifyDataSetChanged();
-    }
 
     @Override
     public long getItemId(int position) {

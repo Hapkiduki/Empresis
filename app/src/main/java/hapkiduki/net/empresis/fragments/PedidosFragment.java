@@ -1,12 +1,13 @@
 package hapkiduki.net.empresis.fragments;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.ArrayMap;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,27 +23,22 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.PedidoAdapter;
 import hapkiduki.net.empresis.clases.Pedido;
-import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.VolleySingleton;
 
 
@@ -53,7 +49,6 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
      */
     private static final String TAG = PedidosFragment.class.getSimpleName();
 
-
     View vista;
 
     RecyclerView recyclerPedidos;
@@ -61,21 +56,19 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
     PedidoAdapter miAdapter;
     LinearLayout contenedor;
     ProgressDialog pDialog;
-    RequestQueue request;
-    JsonObjectRequest jsonObjectRequest;
-
-    boolean SINC = false;
 
     public PedidosFragment() {
 
     }
 
+    public void refresh(){
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit();
+    }
 
-    public static PedidosFragment newInstance(String param1, String param2) {
+
+    public static PedidosFragment newInstance() {
         PedidosFragment fragment = new PedidosFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -92,7 +85,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         vista = inflater.inflate(R.layout.fragment_pedidos, container, false);
         setHasOptionsMenu(true);
 
-        pedidos = new ArrayList<Pedido>();
+        pedidos = new ArrayList<>();
         recyclerPedidos = (RecyclerView) vista.findViewById(R.id.recycler_pedidos);
         recyclerPedidos.setLayoutManager(new LinearLayoutManager(vista.getContext()));
         recyclerPedidos.setHasFixedSize(true);
@@ -106,32 +99,11 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
 
     private void cargarWebService() {
 
-        String pedido = "Pedido ";
         pedidos = Pedido.listAll(Pedido.class, "id");
         miAdapter=new PedidoAdapter(getContext(),pedidos);
         recyclerPedidos.setAdapter(miAdapter);
         miAdapter.notifyDataSetChanged();
-        pedido += "Registros: "+pedidos != null && pedidos.size() > 0 ? pedidos.size() : 0;
-
-        for (Pedido p : pedidos){
-            try {
-              /*  pedido += " Cliente: " +p.getTercero().getTercero();
-                pedido += " Productos: "+p.getProducts().size();
-                for (Referencia r : p.getProducts()) {
-                    pedido += r.getNomref();
-                    pedido += " Cantidad: "+r.getCantPed();
-                }*/
-            }catch (Exception e){
-                pedido += " Error: "+e.getMessage();
-            }
-            pedido+= " Total: "+DecimalFormat.getCurrencyInstance(Locale.US).format(p.getPrecioTotal());
-        }
-        System.out.println("Su pedido fué: "+pedido);
-        Toast.makeText(vista.getContext(), pedido , Toast.LENGTH_LONG).show();
-
     }
-
-
 
     //Agregamos los metodos necesarios para nuestro Scope
     @Override
@@ -146,51 +118,50 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
         itemSync.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if(sincronizarPedidos()) {Pedido.deleteAll(Pedido.class);}
+                sincronizarPedidos();
                 cargarWebService();
                 contenedor.setVisibility(pedidos.size() > 0 ? View.INVISIBLE : View.VISIBLE);
 
                 return true;
             }
         });
-        // itemSync.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
-        itemSync.setVisible(true);
+        itemSync.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
+        itemBuscar.setVisible(contenedor.getVisibility() == View.INVISIBLE ? true : false);
     }
 
-    private boolean sincronizarPedidos() {
+    private void sincronizarPedidos() {
 
-        pDialog=new ProgressDialog(vista.getContext());
+        pDialog=new ProgressDialog(getActivity());
         pDialog.setMessage("Sincronizando Pedidos...");
         pDialog.show();
 
         ConnectivityManager connMgr = (ConnectivityManager)
-                vista.getContext().getSystemService(vista.getContext().CONNECTIVITY_SERVICE);
+                getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+
             for (Pedido p : pedidos) {
 
-          /*  String cliente =  "Carlos";
-            String[] productos = {"Papaya", "Mango", "Pera", "Sandia"};
-            String cantidad = "10";
-*/
                 String[] productos = new String[p.getProducts().size()];
                 String[] cantidades = new String[p.getProducts().size()];
+                String[] precios = new String[p.getProducts().size()];
 
                 String cliente =  p.getTercero().getTercero();
                 for(int i = 0; i < p.getProducts().size(); i++) {
-                    productos[i] = p.getProducts().get(i).getNomref();
+                    productos[i] = p.getProducts().get(i).getCodRef();
                     cantidades[i] = p.getProducts().get(i).getCantPed();
+                    precios[i] = p.getProducts().get(i).getPrice();
                 }
                 String total = ""+p.getPrecioTotal();
 
                 HashMap<String, String> map = new HashMap<>();// Mapeo previo
 
                 map.put("cliente", cliente);
-                // for (int i = 0; i < productos.length; i++) {
+
                 map.put("producto", Arrays.toString(productos));
-                //}
                 map.put("cantidad", Arrays.toString(cantidades));
-                //map.put("total", total);
+                map.put("precio", Arrays.toString(precios));
+
 
                 // Crear nuevo objeto Json basado en el mapa
                 JSONObject jobject = new JSONObject(map);
@@ -201,17 +172,19 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
                 VolleySingleton.getInstance(getActivity()).addToRequestQueue(
                         new JsonObjectRequest(
                                 Request.Method.POST,
-                                "http://192.168.0.103:81/Empresis/pedido.php",
+                                "https://empresis.000webhostapp.com/pedido.php",
                                 jobject,
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
                                         // Procesar la respuesta del servidor
                                         procesarRespuesta(response);
+
                                     }
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(getActivity(), "Ocurrió un error al sincronizar: "+error.getMessage(), Toast.LENGTH_SHORT).show();
                                 Log.d(TAG, "Error Volley: " + error.getMessage());
                             }
                         }
@@ -233,14 +206,11 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
                 );
             }
             pDialog.dismiss();
+
         } else {
-            SINC = false;
             Toast.makeText(vista.getContext(), "No se pudo sincronizar, Verifique que cuenta con acceso a Internet", Toast.LENGTH_SHORT).show();
             pDialog.dismiss();
         }
-
-
-        return  SINC;
     }
 
     private void procesarRespuesta(JSONObject response) {
@@ -257,22 +227,23 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
 
             switch (estado) {
                 case "1":
-                    SINC = false;
                     // Mostrar mensaje
                     Toast.makeText(
                             getActivity(),
                             mensaje,
                             Toast.LENGTH_LONG).show();
-
+                    Pedido.deleteAll(Pedido.class);
+                    refresh();
                     break;
 
                 case "2":
-                    SINC = false;
+
                     // Mostrar mensaje
                     Toast.makeText(
                             getActivity(),
                             mensaje,
                             Toast.LENGTH_LONG).show();
+                    Log.d("Grave error", "Error :"+mensaje);
                     break;
             }
         } catch (JSONException e) {
