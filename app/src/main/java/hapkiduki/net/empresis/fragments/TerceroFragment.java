@@ -20,19 +20,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.android.volley.Cache;
 import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Network;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.BasicNetwork;
-import com.android.volley.toolbox.DiskBasedCache;
-import com.android.volley.toolbox.HttpClientStack;
-import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.orm.SugarContext;
 
 import org.json.JSONArray;
@@ -43,7 +36,6 @@ import java.util.ArrayList;
 
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.adapters.TerceroAdapter;
-import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.Tercero;
 import hapkiduki.net.empresis.clases.VolleySingleton;
 

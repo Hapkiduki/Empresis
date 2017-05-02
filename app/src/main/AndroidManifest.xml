@@ -42,23 +42,31 @@
         android:label="@string/title_activity_referencia_adapter"
         android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".TerceroActivity"
+            android:name=".Activities.TerceroActivity"
             android:configChanges="screenSize|orientation"
             android:label="Terceros" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Activities.PedidosActivity"
             android:label="@string/title_activity_pedidos"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.ProductosActivity"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".Activities.PedidosActivity" />
+            android:parentActivityName=".Activities.PedidosActivity"
+            android:screenOrientation="portrait" />
         <activity
-            android:screenOrientation="portrait"
             android:name=".Activities.PruebaActivity"
             android:label="@string/title_activity_prueba"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activities.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".Activities.PruebaActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="hapkiduki.net.empresis.Activities.PruebaActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -29,13 +29,6 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     private SparseBooleanArray mSelectedItemsIds;
     List<Referencia> oldReferences;
 
-    public interface ChooseListener{
-        public int choose(String codigo);
-    }
-
-    ChooseListener listener;
-
-
     public ReferenciaAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
         this.referencias = referencias;
@@ -72,15 +65,12 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
 
     private boolean selectView(int position, boolean value) {
 
-        int val = 0;
-        listener = (ChooseListener) context;
-        val = listener.choose(referencias.get(position).getCodRef());
         boolean valor = false;
         if (value) {
-            mSelectedItemsIds.put(val > 0 ? val-1 :position, value);
+            mSelectedItemsIds.put(position, value);
             valor =  true;
         }else{
-            mSelectedItemsIds.delete(val > 0 ? val-1 :position);
+            mSelectedItemsIds.delete(position);
             valor = false;
         }
         notifyDataSetChanged();

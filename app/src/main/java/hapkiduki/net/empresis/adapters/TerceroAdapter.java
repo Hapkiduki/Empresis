@@ -5,14 +5,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import hapkiduki.net.empresis.Activities.TerceroActivity;
 import hapkiduki.net.empresis.R;
-import hapkiduki.net.empresis.clases.Referencia;
+import hapkiduki.net.empresis.clases.DeleteListener;
+import hapkiduki.net.empresis.clases.RecyclerClick;
+import hapkiduki.net.empresis.clases.RecyclerTouch;
 import hapkiduki.net.empresis.clases.Tercero;
 
 import static android.text.TextUtils.isEmpty;
@@ -21,13 +24,10 @@ import static android.text.TextUtils.isEmpty;
  * Created by Programa-PC on 01/03/2017.
  */
 
-public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHolder> implements View.OnClickListener{
+public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHolder> implements TerceroActivity.Selecciona{
 
     private Context context;
     private List<Tercero> terceros;
-    //Puede generar error
-    private View.OnClickListener listener;
-
 
     public TerceroAdapter(Context context, ArrayList<Tercero> terceros) {
         this.context = context;
@@ -35,12 +35,11 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_terce, parent, false);
-        //puede generar error
-        itemView.setOnClickListener(this);
+    public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_terce, parent, false);
         return new ViewHolder(itemView);
     }
+
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -65,15 +64,11 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
         return terceros.size();
     }
 
-    public void setOnClickListener(View.OnClickListener listener) {
-        this.listener = listener;
+    @Override
+    public String Selected(int codigo) {
+        return terceros.get(codigo).getDni();
     }
 
-    @Override
-    public void onClick(View v) {
-        if(listener != null)
-            listener.onClick(v);
-    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -86,10 +81,7 @@ public class TerceroAdapter extends RecyclerView.Adapter<TerceroAdapter.ViewHold
             dni = (TextView) itemView.findViewById(R.id.tvDNI);
             direccion = (TextView) itemView.findViewById(R.id.tvDireccion);
             telefono = (TextView) itemView.findViewById(R.id.tvTelefono);
-
         }
-
-
     }
 
     //Agregamos un filtro Scope a nuestro recycler view

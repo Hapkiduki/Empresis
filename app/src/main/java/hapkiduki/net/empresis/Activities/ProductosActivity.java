@@ -28,8 +28,7 @@ import hapkiduki.net.empresis.clases.RecyclerClick;
 import hapkiduki.net.empresis.clases.RecyclerTouch;
 import hapkiduki.net.empresis.clases.Referencia;
 
-public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener,
-        ReferenciaAdapter.ChooseListener {
+public class ProductosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
     RecyclerView recyclerReferencias;
     ArrayList<Referencia> listaRefe;
@@ -39,13 +38,10 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     int quantity;
     private LinearLayoutManager layoutManager;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_productos);
-
 
         layoutManager = new LinearLayoutManager(this);
         listaRefe=new ArrayList<Referencia>();
@@ -178,15 +174,13 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
     //Dialog para escojer la cantidad
     private void numberPickerDialog(final int position){
 
-        //final Referencia referencia = new Referencia();
         NumberPicker numberPicker = new NumberPicker(this);
-        numberPicker.setMaxValue(100);
+        numberPicker.setMaxValue(1000);
         numberPicker.setMinValue(1);
         NumberPicker.OnValueChangeListener changeListener = new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 quantity = newVal;
-                //listaRefe.get(position).setQuantity(""+quantity);
                 listaRefe.get(position).setCantPed(""+quantity);
             }
         };
@@ -194,7 +188,7 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         numberPicker.setOnValueChangedListener(changeListener);
         AlertDialog.Builder dialog = new AlertDialog.Builder(this).setView(numberPicker).setIcon(R.mipmap.ic_launcher);
         dialog.setInverseBackgroundForced(true);
-        dialog.setTitle("Cantidad de producto").setMessage("Seleccione la cantidad de producto a agregar entre 1 a 100");
+        dialog.setTitle("Cantidad de producto").setMessage("Seleccione la cantidad de producto a agregar entre 1 a 1000");
         dialog.setPositiveButton("Seleccionar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -204,21 +198,5 @@ public class ProductosActivity extends AppCompatActivity implements SearchView.O
         dialog.show();
     }
 
-    //ESte metodo es el encargado de actualizar el recyclerView
-    @Override
-    public void onRefresh() {
-
-        datosLocales();
-    }
-
-    @Override
-    public int choose(String codigo) {
-        int valor = 0;
-        for (int i = 0; i < listaRefe.size(); i++) {
-            if (listaRefe.get(i).getCodRef().trim() == codigo.trim())
-                valor = i+1;
-        }
-        return valor;
-    }
 }
 
