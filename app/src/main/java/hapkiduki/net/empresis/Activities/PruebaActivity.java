@@ -49,16 +49,17 @@ public class PruebaActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplication());
-                String vendedor = pref.getString("example_text", "0");
-                if (vendedor.contains("John Smith")) {
-                    Toast.makeText(PruebaActivity.this, "El vendedor es: "+vendedor, Toast.LENGTH_SHORT).show();
+                String vendedor = pref.getString("vendedor_text", "0");
+                if (vendedor.isEmpty() || vendedor.equals("1234")) {
+                    Toast.makeText(PruebaActivity.this, "No hay un vendedor configurado!", Toast.LENGTH_LONG).show();
                     android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
                     Vendedor_Dialog vendedorDialog = new Vendedor_Dialog();
                     vendedorDialog.show(fragmentManager, "dialogo");
-                }
-                /*Intent intent;
+                }else {
+                Intent intent;
                 intent= new Intent(PruebaActivity.this,PedidosActivity.class);
-                startActivityForResult(intent, 1);*/
+                startActivityForResult(intent, 1);
+                }
             }
         });
 

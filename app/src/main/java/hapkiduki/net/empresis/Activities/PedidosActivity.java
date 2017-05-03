@@ -1,7 +1,9 @@
 package hapkiduki.net.empresis.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.MenuItemCompat;
@@ -167,6 +169,8 @@ public class PedidosActivity extends AppCompatActivity implements SearchView.OnQ
 
     private void generarPedido() {
 
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplication());
+        String vendedor = pref.getString("vendedor_text", "0");
         double costEnd = 0;
         if (TextUtils.isEmpty(til_dni.getEditText().getText())){
             til_dni.setError("Debe asignar un cliente!");
@@ -176,7 +180,7 @@ public class PedidosActivity extends AppCompatActivity implements SearchView.OnQ
             for (Referencia producto : lista) {
                 costEnd += Double.parseDouble(producto.getPrice());
             }
-            Pedido miPedido = new Pedido(listaTerce.get(posFin), costEnd);
+            Pedido miPedido = new Pedido(listaTerce.get(posFin), costEnd, vendedor);
             miPedido.save();
             List<Referencia> productos = new ArrayList<>();
             productos = Referencia.listAll(Referencia.class);

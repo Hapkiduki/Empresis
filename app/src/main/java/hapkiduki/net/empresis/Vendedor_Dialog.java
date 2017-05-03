@@ -2,7 +2,9 @@ package hapkiduki.net.empresis;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -19,7 +21,6 @@ public class Vendedor_Dialog extends DialogFragment implements View.OnClickListe
     View vista;
     TextInputLayout ed_vendedor;
     Button btnCancel, btnOk;
-    CheckBox chkRemember;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,7 +29,6 @@ public class Vendedor_Dialog extends DialogFragment implements View.OnClickListe
         ed_vendedor = (TextInputLayout) vista.findViewById(R.id.til_ven);
         btnCancel = (Button) vista.findViewById(R.id.btnCancel);
         btnOk = (Button) vista.findViewById(R.id.btnOk);
-        chkRemember = (CheckBox) vista.findViewById(R.id.remember);
 
         btnCancel.setOnClickListener(this);
         btnOk.setOnClickListener(this);
@@ -61,9 +61,12 @@ public class Vendedor_Dialog extends DialogFragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if (v.getId() == btnOk.getId()){
-            if (chkRemember.isChecked())
-            Toast.makeText(getActivity(), "Hola", Toast.LENGTH_SHORT).show();
-            else Toast.makeText(getActivity(), "Buajajaj", Toast.LENGTH_SHORT).show();
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("vendedor_text", ed_vendedor.getEditText().getText().toString());
+                editor.commit();
+            Toast.makeText(getActivity(), "Vendedor asignado: "+ed_vendedor.getEditText().getText(), Toast.LENGTH_SHORT).show();
+            dismiss();
         }else {
             dismiss();
         }
