@@ -14,6 +14,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import hapkiduki.net.empresis.Activities.ProductosActivity;
 import hapkiduki.net.empresis.R;
 import hapkiduki.net.empresis.clases.Referencia;
 
@@ -27,13 +28,6 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     private List<Referencia> referencias;
     private SparseBooleanArray mSelectedItemsIds;
     List<Referencia> oldReferences;
-
-    public interface ChooseListener{
-        public void choose(String codigo);
-    }
-
-    ChooseListener listener;
-
 
     public ReferenciaAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
@@ -70,6 +64,7 @@ public class ReferenciaAdapter extends RecyclerView.Adapter<ReferenciaAdapter.Vi
     }
 
     private boolean selectView(int position, boolean value) {
+
         boolean valor = false;
         if (value) {
             mSelectedItemsIds.put(position, value);

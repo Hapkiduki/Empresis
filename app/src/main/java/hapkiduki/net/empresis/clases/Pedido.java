@@ -3,7 +3,6 @@ package hapkiduki.net.empresis.clases;
 import com.orm.SugarRecord;
 
 import java.io.Serializable;
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +14,19 @@ public class Pedido extends SugarRecord implements Serializable {
 
     private Tercero tercero;
 
+    private String vendedor;
+
     private double precioTotal;
 
     public Pedido() {
     }
 
-    public Pedido(Tercero tercero, double precioTotal) {
+    public Pedido(Tercero tercero, double precioTotal, String vendedor) {
 
         this.tercero = tercero;
         this.precioTotal = precioTotal;
+        this.vendedor = vendedor;
     }
-
-
 
     public Tercero getTercero() {
         return tercero;
@@ -35,6 +35,14 @@ public class Pedido extends SugarRecord implements Serializable {
 
     public void setTercero(Tercero tercero) {
         this.tercero = tercero;
+    }
+
+    public String getVendedor() {
+        return vendedor;
+    }
+
+    public void setVendedor(String vendedor) {
+        this.vendedor = vendedor;
     }
 
     public double getPrecioTotal() {

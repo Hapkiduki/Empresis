@@ -19,5 +19,12 @@
     <string name="item_terceros">Terceros</string>
     <string name="item_referencias">Referencias</string>
     <string name="item_pedidos">Pedidos</string>
+    <string name="title_activity_settings">Configuración</string>
 
+    <!-- Strings related to Settings -->
+    <string name="pref_title_display_name">Host</string>
+    <string name="pref_default_display_name">https://www.ingesis.co</string>
+
+    <string name="pref_title_vendedor">Vendedor</string>
+    <string name="pref_default_vendedor">1234</string>
 </resources>

@@ -1,9 +1,9 @@
 package hapkiduki.net.empresis.Activities;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.MenuItemCompat;
@@ -22,15 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hapkiduki.net.empresis.R;
-import hapkiduki.net.empresis.TerceroDialog;
 import hapkiduki.net.empresis.adapters.GestionPedidoAdapter;
+import hapkiduki.net.empresis.clases.DeleteListener;
 import hapkiduki.net.empresis.clases.Pedido;
 import hapkiduki.net.empresis.clases.PedidoReferencia;
 import hapkiduki.net.empresis.clases.Referencia;
 import hapkiduki.net.empresis.clases.Tercero;
 
-public class PedidosActivity extends AppCompatActivity implements TerceroDialog.TerceroDialogListner, SearchView.OnQueryTextListener,
-        GestionPedidoAdapter.DeleteListener{
+public class PedidosActivity extends AppCompatActivity implements SearchView.OnQueryTextListener,
+        DeleteListener{
 
     RecyclerView recyclerProdu;
     List<Tercero> listaTerce;
@@ -66,7 +66,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
         posFin = 0;
 
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,10 +82,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
                 mostrarTerceros();
             }
         });
-
     }
-
-
 
     private void crearPedido() {
         Intent intent = new Intent(PedidosActivity.this, ProductosActivity.class);
@@ -100,50 +96,53 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
         if (requestCode == REQUEST_CODE){
             if (resultCode == RESULT_OK) {
-                // String result = data.getStringExtra("Productos");
-                lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
 
-                for (Referencia referencia : lista){
+                String dni = data.getExtras().getString("DNI");
+                String tel = data.getExtras().getString("Tel");
+                String dir = data.getExtras().getString("Dir");
+                if (!TextUtils.isEmpty(dni)) {
+                    pasaParametros(dni, TextUtils.isEmpty(tel) ? "Desconocido" : tel, TextUtils.isEmpty(dir) ? "Desconocido" : dir);
+                }else {
+                    lista = (List<Referencia>) data.getExtras().getSerializable("Productos");
 
-                    referencia.setPrice(""+Integer.parseInt(referencia.getCantPed()) * Double.parseDouble(referencia.getPrice()));
-                    List<Referencia> notes = Referencia.findWithQuery(Referencia.class, "Select * from referencia where cod_ref = ?", referencia.getCodRef());
-                    notes.get(0).setCantPed(referencia.getCantPed());
-                    notes.get(0).save();
+                    for (Referencia referencia : lista) {
+
+                        referencia.setPrice("" + Integer.parseInt(referencia.getCantPed()) * Double.parseDouble(referencia.getPrice()));
+                        List<Referencia> notes = Referencia.findWithQuery(Referencia.class, "Select * from referencia where cod_ref = ?", referencia.getCodRef());
+                        notes.get(0).setCantPed(referencia.getCantPed());
+                        notes.get(0).save();
+                    }
+                    try {
+                        int cantidad = Integer.parseInt(String.valueOf(data.getExtras().getIntegerArrayList("posicion").size()));
+                        posPro = new int[cantidad];
+                        for (int i = 0; i < cantidad; i++)
+                            posPro[i] = Integer.parseInt(String.valueOf(data.getExtras().getIntegerArrayList("posicion").get(i)));
+                    } catch (Exception e) {
+                        Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    miAdapter = new GestionPedidoAdapter(this, lista);
+                    recyclerProdu.setAdapter(miAdapter);
+                    miAdapter.notifyDataSetChanged();
+                    itemBuscar.setVisible(lista.size() > 0 ? true : false);
                 }
-                try {
-                    int cantidad = Integer.parseInt(String.valueOf(data.getExtras().getIntegerArrayList("posicion").size()));
-                    posPro = new int[cantidad];
-                    for (int i = 0; i < cantidad; i++)
-                        posPro[i] = Integer.parseInt(String.valueOf(data.getExtras().getIntegerArrayList("posicion").get(i)));
-                }catch (Exception e){
-                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-
-                miAdapter = new GestionPedidoAdapter(this, lista);
-                recyclerProdu.setAdapter(miAdapter);
-                miAdapter.notifyDataSetChanged();
-                itemBuscar.setVisible(lista.size() > 0 ? true : false);
             }
         }
     }
 
+    private void pasaParametros(String dni, String tel, String dir) {
+        til_dni.getEditText().setText(dni);
+        til_telefono.getEditText().setText(tel);
+        til_direccion.getEditText().setText(dir);
+    }
+
 
     private void mostrarTerceros() {
-        FragmentManager fragmentManager = getFragmentManager();
-        TerceroDialog terceroDialog = new TerceroDialog();
-        terceroDialog.show(fragmentManager, "dialogTer");
+        Intent intent = new Intent(PedidosActivity.this, TerceroActivity.class);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
 
-    @Override
-    public void onDialogPositiveClick(ArrayList<Tercero> terceros, int posicion) {
-        listaTerce.addAll(terceros);
-        posFin = posicion;
-        til_dni.getEditText().setText(terceros.get(posicion).getDni());
-        til_telefono.getEditText().setText(terceros.get(posicion).getTelefono());
-        til_direccion.getEditText().setText(terceros.get(posicion).getDireccion());
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -163,7 +162,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         switch (item.getItemId()){
             case R.id.item_ready:
                 generarPedido();
-                // consultar();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -171,6 +169,8 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
 
     private void generarPedido() {
 
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplication());
+        String vendedor = pref.getString("vendedor_text", "0");
         double costEnd = 0;
         if (TextUtils.isEmpty(til_dni.getEditText().getText())){
             til_dni.setError("Debe asignar un cliente!");
@@ -180,7 +180,7 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
             for (Referencia producto : lista) {
                 costEnd += Double.parseDouble(producto.getPrice());
             }
-            Pedido miPedido = new Pedido(listaTerce.get(posFin), costEnd);
+            Pedido miPedido = new Pedido(listaTerce.get(posFin), costEnd, vendedor);
             miPedido.save();
             List<Referencia> productos = new ArrayList<>();
             productos = Referencia.listAll(Referencia.class);
@@ -198,13 +198,6 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
             return;
         }
         finish();
-    }
-
-
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
     }
 
 
@@ -250,4 +243,5 @@ public class PedidosActivity extends AppCompatActivity implements TerceroDialog.
         }
 
     }
+
 }

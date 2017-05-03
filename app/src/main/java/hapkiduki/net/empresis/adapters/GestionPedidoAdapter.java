@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 import hapkiduki.net.empresis.R;
+import hapkiduki.net.empresis.clases.DeleteListener;
 import hapkiduki.net.empresis.clases.Referencia;
 
 /**
@@ -26,9 +27,6 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
     private Context context;
     private List<Referencia> referencias;
 
-    public interface DeleteListener{
-        public void pinchado(String codigo);
-    }
 
     DeleteListener listener;
     boolean filtroEstado;
@@ -37,6 +35,7 @@ public class GestionPedidoAdapter extends RecyclerView.Adapter<GestionPedidoAdap
     public GestionPedidoAdapter(Context context, List<Referencia> referencias) {
         this.context = context;
         this.referencias = referencias;
+
     }
 
     @Override

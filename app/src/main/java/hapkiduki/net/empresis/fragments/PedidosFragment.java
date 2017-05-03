@@ -146,7 +146,7 @@ public class PedidosFragment extends Fragment implements SearchView.OnQueryTextL
                 String[] cantidades = new String[p.getProducts().size()];
                 String[] precios = new String[p.getProducts().size()];
 
-                String cliente =  p.getTercero().getTercero();
+                String cliente =  p.getTercero().getDni();
                 for(int i = 0; i < p.getProducts().size(); i++) {
                     productos[i] = p.getProducts().get(i).getCodRef();
                     cantidades[i] = p.getProducts().get(i).getCantPed();

@@ -2,17 +2,10 @@ package hapkiduki.net.empresis.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -25,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.orm.SugarContext;
@@ -33,6 +25,7 @@ import com.orm.SugarContext;
 import java.util.ArrayList;
 
 import hapkiduki.net.empresis.R;
+import hapkiduki.net.empresis.Vendedor_Dialog;
 import hapkiduki.net.empresis.clases.Sincronizar;
 import hapkiduki.net.empresis.fragments.HomeFragment;
 import hapkiduki.net.empresis.fragments.PedidosFragment;
@@ -55,9 +48,18 @@ public class PruebaActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplication());
+                String vendedor = pref.getString("vendedor_text", "0");
+                if (vendedor.isEmpty() || vendedor.equals("1234")) {
+                    Toast.makeText(PruebaActivity.this, "No hay un vendedor configurado!", Toast.LENGTH_LONG).show();
+                    android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+                    Vendedor_Dialog vendedorDialog = new Vendedor_Dialog();
+                    vendedorDialog.show(fragmentManager, "dialogo");
+                }else {
                 Intent intent;
                 intent= new Intent(PruebaActivity.this,PedidosActivity.class);
                 startActivityForResult(intent, 1);
+                }
             }
         });
 
@@ -111,6 +113,8 @@ public class PruebaActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 

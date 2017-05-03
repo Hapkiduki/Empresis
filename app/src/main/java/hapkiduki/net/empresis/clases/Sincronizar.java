@@ -2,9 +2,10 @@ package hapkiduki.net.empresis.clases;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.AlertDialog;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -38,8 +39,13 @@ public class Sincronizar {
     public static JsonObjectRequest jsonObjectRequest;
     static ProgressDialog dialog;
 
+    private static SharedPreferences pref;
+    private static String HOST;
+
     public static void iniciarSincronizacion(PruebaActivity pruebaActivity, ArrayList seletedItems) {
 
+        pref = PreferenceManager.getDefaultSharedPreferences(pruebaActivity);
+        HOST = pref.getString("host_text", "https://www.ingesis.co");
         dialog = new ProgressDialog(pruebaActivity);
         dialog.setIcon(R.mipmap.ic_launcher);
         dialog.setTitle("Iniciando Sincronización");
@@ -51,20 +57,20 @@ public class Sincronizar {
                 pruebaActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            sincronizarPedidos(pruebaActivity);
+            sincronizarPedidos(pruebaActivity, HOST);
             int seleccion = seletedItems.size();
             if (seleccion > 0) {
                 if (seleccion > 1) {
-                    sincronizarReferencias(pruebaActivity);
-                    sincronizarterceros(pruebaActivity);
+                    sincronizarReferencias(pruebaActivity, HOST);
+                    sincronizarterceros(pruebaActivity, HOST);
 
                 } else {
                     switch ((int) seletedItems.get(0)) {
                         case 0:
-                            sincronizarterceros(pruebaActivity);
+                            sincronizarterceros(pruebaActivity, HOST);
                             break;
                         case 1:
-                            sincronizarReferencias(pruebaActivity);
+                            sincronizarReferencias(pruebaActivity, HOST);
                             break;
                     }
                 }
@@ -79,11 +85,13 @@ public class Sincronizar {
         }
     }
 
-    private static void sincronizarterceros(final PruebaActivity pruebaActivity) {
+    private static void sincronizarterceros(final PruebaActivity pruebaActivity, String HOST) {
+
         dialog.show();
         Toast.makeText(pruebaActivity, "Inicia Sincronización de terceros ", Toast.LENGTH_SHORT).show();
         try{
-            String url = "https://empresis.000webhostapp.com/WsJSONConsultaTercero.php";
+            //String url = "https://empresis.000webhostapp.com/WsJSONConsultaTercero.php";
+            String url = Sincronizar.HOST +"/WsJSONConsultaTercero.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -147,11 +155,12 @@ public class Sincronizar {
         }
     }
 
-    private static void sincronizarReferencias(final PruebaActivity pruebaActivity) {
+    private static void sincronizarReferencias(final PruebaActivity pruebaActivity, String HOST) {
         dialog.show();
         Toast.makeText(pruebaActivity, "Inicia Sincronización de referencias ", Toast.LENGTH_SHORT).show();
         try{
-            String url = "https://empresis.000webhostapp.com/conexion.php";
+            //String url = "https://empresis.000webhostapp.com/conexion.php";
+            String url = HOST+"/conexion.php";
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url,null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -211,7 +220,7 @@ public class Sincronizar {
         }
     }
 
-    private static void sincronizarPedidos(PruebaActivity pruebaActivity) {
+    private static void sincronizarPedidos(PruebaActivity pruebaActivity, String HOST) {
         dialog.show();
         Toast.makeText(pruebaActivity, "Inicia Sincronización de pedidos ", Toast.LENGTH_SHORT).show();
         int cantPed = Pedido.listAll(Pedido.class).size();
@@ -232,6 +241,7 @@ public class Sincronizar {
             String[] precios = new String[p.getProducts().size()];
 
             String cliente =  p.getTercero().getTercero();
+            String vendedor = p.getVendedor();
             for(int i = 0; i < p.getProducts().size(); i++) {
                 productos[i] = p.getProducts().get(i).getCodRef();
                 cantidades[i] = p.getProducts().get(i).getCantPed();
@@ -242,6 +252,8 @@ public class Sincronizar {
             HashMap<String, String> map = new HashMap<>();// Mapeo previo
 
             map.put("cliente", cliente);
+
+            map.put("vendedor", vendedor);
 
             map.put("producto", Arrays.toString(productos));
 
@@ -256,7 +268,7 @@ public class Sincronizar {
             VolleySingleton.getInstance(pruebaActivity).addToRequestQueue(
                     new JsonObjectRequest(
                             Request.Method.POST,
-                            "https://empresis.000webhostapp.com/pedido.php",
+                            /*"https://empresis.000webhostapp.com/pedido.php",*/HOST+"/pedido.php",
                             jobject,
                             new Response.Listener<JSONObject>() {
                                 @Override
