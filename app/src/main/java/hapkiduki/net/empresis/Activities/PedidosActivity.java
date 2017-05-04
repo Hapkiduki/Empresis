@@ -33,7 +33,7 @@ public class PedidosActivity extends AppCompatActivity implements SearchView.OnQ
         DeleteListener{
 
     RecyclerView recyclerProdu;
-    List<Tercero> listaTerce;
+    //List<Tercero> listaTerce;
     GestionPedidoAdapter miAdapter;
     TextInputLayout til_dni, til_telefono, til_direccion;
     MenuItem itemBuscar;
@@ -41,7 +41,7 @@ public class PedidosActivity extends AppCompatActivity implements SearchView.OnQ
     private static final int REQUEST_CODE = 1;
 
     List<Referencia> lista;
-    int posFin;
+    //int posFin;
     int[] posPro;
 
 
@@ -54,7 +54,7 @@ public class PedidosActivity extends AppCompatActivity implements SearchView.OnQ
         setSupportActionBar(toolbar);
 
         lista = new ArrayList<>();
-        listaTerce = new ArrayList<>();
+        //listaTerce = new ArrayList<>();
 
         recyclerProdu = (RecyclerView) findViewById(R.id.recycler_produ);
         recyclerProdu.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
@@ -64,7 +64,7 @@ public class PedidosActivity extends AppCompatActivity implements SearchView.OnQ
         til_telefono = (TextInputLayout) findViewById(R.id.til_telefono);
         til_direccion = (TextInputLayout) findViewById(R.id.til_direccion);
 
-        posFin = 0;
+        //posFin = 0;
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -180,7 +180,13 @@ public class PedidosActivity extends AppCompatActivity implements SearchView.OnQ
             for (Referencia producto : lista) {
                 costEnd += Double.parseDouble(producto.getPrice());
             }
-            Pedido miPedido = new Pedido(listaTerce.get(posFin), costEnd, vendedor);
+            List<Tercero> cliente = Tercero.find(Tercero.class, "dni == ?", til_dni.getEditText().getText().toString());
+            if (cliente.size() == 0){
+                Toast.makeText(this, "No hay ningun cliente asignado a este numero de documento!", Toast.LENGTH_LONG).show();
+                til_dni.setError("Registro no identificado!");
+                return;
+            }
+            Pedido miPedido = new Pedido(cliente.get(0), costEnd, vendedor);
             miPedido.save();
             List<Referencia> productos = new ArrayList<>();
             productos = Referencia.listAll(Referencia.class);
