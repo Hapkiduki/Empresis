@@ -240,7 +240,7 @@ public class Sincronizar {
             String[] cantidades = new String[p.getProducts().size()];
             String[] precios = new String[p.getProducts().size()];
 
-            String cliente =  p.getTercero().getTercero();
+            String cliente =  p.getTercero().getDni();
             String vendedor = p.getVendedor();
             for(int i = 0; i < p.getProducts().size(); i++) {
                 productos[i] = p.getProducts().get(i).getCodRef();
@@ -253,7 +253,7 @@ public class Sincronizar {
 
             map.put("cliente", cliente);
 
-            map.put("vendedor", vendedor);
+            map.put("vendedor", vendedor.toString());
 
             map.put("producto", Arrays.toString(productos));
 
@@ -331,6 +331,8 @@ public class Sincronizar {
                             pruebaActivity,
                             mensaje,
                             Toast.LENGTH_LONG).show();
+
+                    Log.e("error", "error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx "+mensaje);
                     break;
             }
         } catch (JSONException e) {
